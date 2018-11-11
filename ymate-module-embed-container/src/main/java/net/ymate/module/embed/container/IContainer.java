@@ -17,10 +17,11 @@ package net.ymate.module.embed.container;
 
 import net.ymate.module.embed.container.impl.DefaultContainer;
 import net.ymate.platform.core.util.ClassUtils;
-import org.apache.commons.io.IOUtils;
 
-import java.io.InputStream;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author 刘镇 (suninformation@163.com) on 2018/3/15 下午2:30
@@ -55,17 +56,7 @@ public interface IContainer {
 
         public static synchronized IContainer getDefaultContainer() {
             if (__defaultContainer == null) {
-                InputStream _in = null;
-                try {
-                    _in = Main.class.getClassLoader().getResourceAsStream("ymp-embed-container.properties");
-                    Properties _props = new Properties();
-                    _props.load(_in);
-                    //
-                    __defaultContainer = ClassUtils.impl(_props.getProperty("container"), IContainer.class, Main.class);
-                } catch (Exception ignored) {
-                } finally {
-                    IOUtils.closeQuietly(_in);
-                }
+                __defaultContainer = ClassUtils.loadClass(IContainer.class);
                 if (__defaultContainer == null) {
                     __defaultContainer = new DefaultContainer();
                 }
