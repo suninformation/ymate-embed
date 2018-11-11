@@ -140,16 +140,6 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>2.5</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.servlet.jsp</groupId>
-                <artifactId>jsp-api</artifactId>
-                <version>2.2</version>
-            </dependency>
-            <dependency>
                 <groupId>jstl</groupId>
                 <artifactId>jstl</artifactId>
                 <version>1.2</version>
@@ -161,17 +151,27 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-jasper</artifactId>
-                <version>${tomcat.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-logging-juli</artifactId>
                 <version>${tomcat.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-jasper</artifactId>
+                <version>${tomcat.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-util</artifactId>
+                <artifactId>tomcat-jasper</artifactId>
+                <version>${tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-jasper-el</artifactId>
+                <version>${tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-jsp-api</artifactId>
                 <version>${tomcat.version}</version>
             </dependency>
             <dependency>
@@ -198,41 +198,6 @@
                 <groupId>net.ymate.platform</groupId>
                 <artifactId>ymate-platform-webmvc</artifactId>
                 <version>${ymate.platform.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.ymate.platform</groupId>
-                <artifactId>ymate-platform-persistence-jdbc</artifactId>
-                <version>${ymate.platform.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-dbcp</groupId>
-                <artifactId>commons-dbcp</artifactId>
-                <version>1.4</version>
-            </dependency>
-            <dependency>
-                <groupId>com.mchange</groupId>
-                <artifactId>c3p0</artifactId>
-                <version>0.9.5.2</version>
-            </dependency>
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>5.1.35</version>
-            </dependency>
-            <dependency>
-                <groupId>com.microsoft.sqlserver</groupId>
-                <artifactId>mssql-jdbc</artifactId>
-                <version>6.4.0.jre7</version>
-            </dependency>
-            <dependency>
-                <groupId>net.ymate.framework</groupId>
-                <artifactId>ymate-framework-commons</artifactId>
-                <version>${ymate.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.ymate.framework</groupId>
-                <artifactId>ymate-framework-core</artifactId>
-                <version>${ymate.framework.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
