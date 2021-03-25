@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>ymate-module-embed-parent</artifactId>
+        <artifactId>ymate-embed-parent</artifactId>
         <groupId>net.ymate.module</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -15,18 +15,10 @@
     <packaging>jar</packaging>
 
     <name>ymate-module-embed</name>
-    <url>http://www.ymate.net/</url>
-    <description>YMP Embed Module Archetype</description>
+    <url>https://www.ymate.net/</url>
+    <description>YMP Embedded Bootstrap.</description>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>**/*.*</exclude>
-                </excludes>
-            </resource>
-        </resources>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -34,6 +26,9 @@
                     <artifactId>maven-jar-plugin</artifactId>
                     <configuration>
                         <archive>
+                            <manifest>
+                                <mainClass>net.ymate.module.embed.Main</mainClass>
+                            </manifest>
                             <manifestSections>
                                 <manifestSection>
                                     <name>net/ymate/module/embed/</name>
@@ -50,56 +45,13 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.17</version>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jstl</groupId>
-            <artifactId>jstl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.ymate.platform</groupId>
-            <artifactId>ymate-platform-webmvc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.ymate.platform</groupId>
-            <artifactId>ymate-platform-configuration</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.ymate.platform</groupId>
-            <artifactId>ymate-platform-log-jcl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.ymate.platform</groupId>
-            <artifactId>ymate-platform-log-slf4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.ymate.module</groupId>
-            <artifactId>ymate-module-embed-container</artifactId>
-            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

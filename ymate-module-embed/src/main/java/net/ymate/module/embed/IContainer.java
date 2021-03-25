@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2018 the original author or authors.
+ * Copyright 2007-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +15,23 @@
  */
 package net.ymate.module.embed;
 
-import net.ymate.platform.core.YMP;
-
 /**
- * @author 刘镇 (suninformation@163.com) on 2018/11/10 下午 18:22
- * @version 1.0
+ * 嵌入式容器
+ *
+ * @author 刘镇 (suninformation@163.com) on 2021/03/24 16:56
+ * @since 1.0.0
  */
-public interface IEmbed {
-
-    String MODULE_NAME = "module.embed";
+public interface IContainer {
 
     /**
-     * @return 返回所属YMP框架管理器实例
+     * 启动容器
+     *
+     * @param args 参数集合
      */
-    YMP getOwner();
+    void start(String... args);
 
     /**
-     * @return 返回模块配置对象
+     * 停止容器
      */
-    IEmbedModuleCfg getModuleCfg();
-
-    /**
-     * @return 返回模块是否已初始化
-     */
-    boolean isInited();
-
+    void stop();
 }

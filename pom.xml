@@ -5,18 +5,23 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.ymate.module</groupId>
-    <artifactId>ymate-module-embed-parent</artifactId>
+    <artifactId>ymate-embed-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>ymate-module-embed-parent</name>
-    <url>http://www.ymate.net/</url>
-    <description>YMP Embed Module Parent Archetype</description>
+    <name>ymate-embed-parent</name>
+    <url>https://www.ymate.net/</url>
+    <description>YMP Embed Parent</description>
 
     <modules>
-        <module>ymate-module-embed-container</module>
         <module>ymate-module-embed</module>
+        <module>ymate-module-embed-tomcat</module>
     </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tomcat.version>8.5.64</tomcat.version>
+    </properties>
 
     <developers>
         <developer>
@@ -33,48 +38,16 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:suninformation/ymate-module-embed.git</connection>
-        <developerConnection>scm:git:git@github.com:suninformation/ymate-module-embed.git</developerConnection>
-        <url>git@github.com:suninformation/ymate-module-embed.git</url>
+        <connection>scm:git:git@github.com:suninformation/ymate-embed.git</connection>
+        <developerConnection>scm:git:git@github.com:suninformation/ymate-embed.git</developerConnection>
+        <url>git@github.com:suninformation/ymate-embed.git</url>
     </scm>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ymate.platform.version>2.0.6</ymate.platform.version>
-        <ymate.framework.version>2.0.6</ymate.framework.version>
-        <tomcat.version>7.0.91</tomcat.version>
-    </properties>
-
-    <build>
-        <plugins>
-            <!-- Compile -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-            <!-- Test -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.17</version>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <profiles>
         <profile>
             <id>release</id>
             <build>
                 <plugins>
-                    <!-- Source -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
@@ -88,7 +61,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- Javadoc -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
@@ -102,7 +74,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- GPG -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -131,18 +102,50 @@
         </profile>
     </profiles>
 
+    <build>
+        <plugins>
+            <!-- Compile -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <!-- Javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <configuration>
+                    <aggregate>true</aggregate>
+                </configuration>
+            </plugin>
+            <!-- Test -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-archetype-plugin</artifactId>
+                <version>2.4</version>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <version>4.13.1</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>jstl</groupId>
-                <artifactId>jstl</artifactId>
-                <version>1.2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.tomcat.embed</groupId>
@@ -151,53 +154,18 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-logging-juli</artifactId>
-                <version>${tomcat.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-jasper</artifactId>
                 <version>${tomcat.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-jasper</artifactId>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-el</artifactId>
                 <version>${tomcat.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-jasper-el</artifactId>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-websocket</artifactId>
                 <version>${tomcat.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-jsp-api</artifactId>
-                <version>${tomcat.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.ymate.platform</groupId>
-                <artifactId>ymate-platform-core</artifactId>
-                <version>${ymate.platform.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.ymate.platform</groupId>
-                <artifactId>ymate-platform-configuration</artifactId>
-                <version>${ymate.platform.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.ymate.platform</groupId>
-                <artifactId>ymate-platform-log-jcl</artifactId>
-                <version>${ymate.platform.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.ymate.platform</groupId>
-                <artifactId>ymate-platform-log-slf4j</artifactId>
-                <version>${ymate.platform.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.ymate.platform</groupId>
-                <artifactId>ymate-platform-webmvc</artifactId>
-                <version>${ymate.platform.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
