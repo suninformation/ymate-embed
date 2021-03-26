@@ -48,13 +48,20 @@ public class Main {
                 endIdx = jarFileName.length() - 1;
             }
             File targetFile = new File(System.getProperty("user.home"), ".embeddedWorks/" + jarFileName.substring(beginIdx, endIdx) + "/ROOT");
-            System.out.println("Working directory: " + targetFile.getPath());
+            String tmpDirPath = new File(targetFile.getParentFile(), "/temp").getPath();
             System.setProperty("embedded.home", targetFile.getPath());
+            System.setProperty("java.io.tmpdir", tmpDirPath);
+            //
+            System.out.println("Working directory: " + targetFile.getPath());
+            System.out.println("Temporary directory: " + tmpDirPath);
+            //
+            CommandLineHelper configs = CommandLineHelper.bind(args);
+            boolean redeploy = configs.has("redeploy");
+            //
             Enumeration<JarEntry> entriesEnum = jarFile.entries();
             while (entriesEnum.hasMoreElements()) {
                 JarEntry entry = entriesEnum.nextElement();
                 if (!entry.isDirectory()) {
-                    System.out.printf("Unpacking %s...%n", entry.getName());
                     if (entry.getName().startsWith("net/ymate/module/embed/")) {
                         continue;
                     }
@@ -63,9 +70,12 @@ public class Main {
                     if (!distFileParent.exists() && !distFileParent.mkdirs()) {
                         throw new IOException(String.format("Unable to create directory: %s", distFileParent.getPath()));
                     }
-                    try (InputStream inputStream = jarFile.getInputStream(entry);
-                         OutputStream outputStream = new FileOutputStream(distFile)) {
-                        copyStream(inputStream, outputStream);
+                    if (!distFile.exists() || redeploy) {
+                        try (InputStream inputStream = jarFile.getInputStream(entry);
+                             OutputStream outputStream = new FileOutputStream(distFile)) {
+                            System.out.printf("%s %s...%n", distFile.exists() && redeploy ? "Redeploying" : "Unpacking",entry.getName());
+                            copyStream(inputStream, outputStream);
+                        }
                     }
                 }
             }
