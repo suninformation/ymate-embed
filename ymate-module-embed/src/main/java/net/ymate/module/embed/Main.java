@@ -73,15 +73,21 @@ public class Main {
                     if (!distFile.exists() || redeploy) {
                         try (InputStream inputStream = jarFile.getInputStream(entry);
                              OutputStream outputStream = new FileOutputStream(distFile)) {
-                            System.out.printf("%s %s...%n", distFile.exists() && redeploy ? "Redeploying" : "Unpacking",entry.getName());
+                            System.out.printf("%s %s...%n", distFile.exists() && redeploy ? "Redeploying" : "Unpacking", entry.getName());
                             copyStream(inputStream, outputStream);
                         }
                     }
                 }
             }
             List<URL> urls = new ArrayList<>();
-            parseLibDir(new File(targetFile, "META-INF/dependencies"), urls);
-            parseLibDir(new File(targetFile, "WEB-INF/lib"), urls, "tomcat-", "ecj-", "ymate-module-embed-");
+            File deptLibDir = new File(targetFile, "META-INF/dependencies");
+            if (deptLibDir.exists() && deptLibDir.isDirectory()) {
+                parseLibDir(deptLibDir, urls);
+            }
+            File webLibDir = new File(targetFile, "WEB-INF/lib");
+            if (webLibDir.exists() && webLibDir.isDirectory()) {
+                parseLibDir(webLibDir, urls, "tomcat-", "ecj-", "ymate-module-embed-");
+            }
             URLClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]));
             Thread.currentThread().setContextClassLoader(classLoader);
             ServiceLoader<IContainer> containers = ServiceLoader.load(IContainer.class, classLoader);
