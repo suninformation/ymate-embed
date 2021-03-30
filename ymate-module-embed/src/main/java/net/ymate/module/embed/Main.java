@@ -79,7 +79,7 @@ public class Main {
                     }
                 }
             }
-            List<URL> urls = new ArrayList<>();
+            Set<URL> urls = new HashSet<>();
             File deptLibDir = new File(targetFile, "META-INF/dependencies");
             if (deptLibDir.exists() && deptLibDir.isDirectory()) {
                 parseLibDir(deptLibDir, urls);
@@ -145,7 +145,7 @@ public class Main {
         }
     }
 
-    public static void parseLibDir(File libsDir, List<URL> urls, String... startWiths) throws MalformedURLException {
+    public static void parseLibDir(File libsDir, Set<URL> urls, String... startWiths) throws MalformedURLException {
         if (libsDir.exists() && libsDir.isDirectory()) {
             File[] libFiles = libsDir.listFiles();
             if (libFiles != null && libFiles.length > 0) {

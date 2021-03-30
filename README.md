@@ -44,6 +44,14 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 ## 配置说明
 
 
+### 设置Tomcat版本
+
+```xml
+<properties>
+    <tomcat.version>8.5.64</tomcat.version>
+</properties>
+```
+
 
 ### 添加必要依赖包
 
@@ -119,46 +127,44 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
                         <groupId>javax.servlet.jsp</groupId>
                         <artifactId>jsp-api</artifactId>
                     </artifactItem>
-                    <dependency>
+                    <artifactItem>
                         <groupId>org.apache.tomcat</groupId>
                         <artifactId>tomcat-annotations-api</artifactId>
                         <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
+                    </artifactItem>
+                    <artifactItem>
                         <groupId>org.apache.tomcat.embed</groupId>
                         <artifactId>tomcat-embed-core</artifactId>
                         <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
+                    </artifactItem>
+                    <artifactItem>
                         <groupId>org.apache.tomcat.embed</groupId>
                         <artifactId>tomcat-embed-jasper</artifactId>
                         <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
+                    </artifactItem>
+                    <artifactItem>
                         <groupId>org.apache.tomcat.embed</groupId>
                         <artifactId>tomcat-embed-el</artifactId>
                         <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
+                    </artifactItem>
+                    <artifactItem>
                         <groupId>org.apache.tomcat.embed</groupId>
                         <artifactId>tomcat-embed-websocket</artifactId>
                         <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
+                    </artifactItem>
+                    <artifactItem>
                         <groupId>org.eclipse.jdt</groupId>
                         <artifactId>ecj</artifactId>
                         <version>3.12.3</version>
-                    </dependency>
-                    <dependency>
+                    </artifactItem>
+                    <artifactItem>
                         <groupId>net.ymate.module</groupId>
                         <artifactId>ymate-module-embed-tomcat</artifactId>
                         <version>1.0-SNAPSHOT</version>
-                    </dependency>
+                    </artifactItem>
                 </artifactItems>
-                <outputDirectory>
-                		${project.build.directory}/${project.build.finalName}/META-INF/dependencies
-              	</outputDirectory>
-                <stripVersion>true</stripVersion>
+                <outputDirectory>${project.build.directory}/${project.build.finalName}/META-INF/dependencies</outputDirectory>
+                <stripVersion>false</stripVersion>
                 <overWriteIfNewer>true</overWriteIfNewer>
                 <overWriteReleases>false</overWriteReleases>
                 <overWriteSnapshots>true</overWriteSnapshots>
