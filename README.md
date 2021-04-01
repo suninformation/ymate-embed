@@ -74,7 +74,9 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 ```xml
 <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-war-plugin</artifactId>
+    <version>2.2</version>
     <configuration>
       <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
       <archive>
@@ -94,7 +96,9 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 ```xml
 <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-dependency-plugin</artifactId>
+    <version>2.8</version>
     <executions>
         <execution>
             <id>embedded-main</id>
@@ -118,15 +122,6 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
             </goals>
             <configuration>
                 <artifactItems>
-                    <artifactItem>
-                        <groupId>javax.servlet</groupId>
-                        <artifactId>javax.servlet-api</artifactId>
-                        <version>3.1.0</version>
-                    </artifactItem>
-                    <artifactItem>
-                        <groupId>javax.servlet.jsp</groupId>
-                        <artifactId>jsp-api</artifactId>
-                    </artifactItem>
                     <artifactItem>
                         <groupId>org.apache.tomcat</groupId>
                         <artifactId>tomcat-annotations-api</artifactId>
