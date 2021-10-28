@@ -170,7 +170,7 @@ public class Main {
         if (mainClass != null) {
             URLConnection connection = mainClass.openConnection();
             if (connection instanceof JarURLConnection) {
-                return ((JarURLConnection) mainClass.openConnection()).getJarFile();
+                return ((JarURLConnection) connection).getJarFile();
             }
         }
         return null;

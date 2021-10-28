@@ -1,8 +1,8 @@
 # YMATE-EMBED
 
-本项目为可执行嵌入式Web容器，在原始WAR包文件结构的基础上为其指定引导程序及相关依赖文件，并通过命令行方式直接启动Web服务，从而达到简化Web工程部署流程的目的。
+本项目为可执行嵌入式 Web 容器，在原始WAR包文件结构的基础上为其指定引导程序及相关依赖文件，并通过命令行方式直接启动 Web 服务，从而达到简化 Web 工程部署流程的目的。
 
-目前支持以下Web容器：
+目前支持以下 Web 容器：
 
 - Apache-tomcat-embed-8.5.x
 
@@ -26,12 +26,12 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 | 参数项                  | 说明 | 默认值    |
 | ----------------------- | ---- | --------- |
-| --redeploy              | 重新部署，服务启动时将重新将WAR包中的相关资源文件得新解压并覆盖 |      |
+| --redeploy              | 重新部署，服务启动时将 WAR 包中的相关资源文件重新解压并覆盖 |      |
 | --port                  | 服务监听的端口号 | `8080`      |
 | --protocol              | 协议名称 | `HTTP/1.1`  |
 | --contextPath           | 上下文映射路径 | `""` |
 | --hostName              | 服务的主机名称 | `localhost` |
-| --uriEncoding           | URI请求的编码格式 | `UTF-8`     |
+| --uriEncoding           | URI 请求的编码格式 | `UTF-8`     |
 | --fileEncoding          | 文件编码格式 | `UTF-8`     |
 | --asyncTimeout          | 异步请求的默认超时时间（毫秒） | `30000`     |
 | --connectionTimeout     | 连接的默认超时时间（毫秒） | `20000`     |
@@ -44,11 +44,11 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 ## 配置说明
 
 
-### 设置Tomcat版本
+### 设置 Tomcat 版本
 
 ```xml
 <properties>
-    <tomcat.version>8.5.64</tomcat.version>
+    <tomcat.version>8.5.72</tomcat.version>
 </properties>
 ```
 
