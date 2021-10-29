@@ -16,7 +16,7 @@ java -jar <WAR包文件> [--参数项 [参数值]]
 
 
 
-### 示例：
+**示例：**
 
 ```shell
 java -jar demo.war --port 8088 --contextPath /demo --redeploy
@@ -24,7 +24,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 
 
-### 参数项及默认值:
+## 参数项及默认值
 
 | 参数项                  | 说明 | 默认值    |
 | ----------------------- | ---- | --------- |
@@ -47,7 +47,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 
 
-### 设置 Tomcat 版本
+### STEP 1：设置 Tomcat 版本
 
 ```xml
 <properties>
@@ -57,7 +57,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 
 
-### 添加必要依赖包
+### STEP 2：添加必要依赖包
 
 ```xml
 <dependency>
@@ -70,7 +70,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 
 
-### 配置相关插件
+### STEP 3：配置相关插件
 
 
 
@@ -95,8 +95,6 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 
 - 配置构建规则
-
-
 
 ```xml
 <plugin>
@@ -175,13 +173,13 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 
 
-### One More Thing
+## One More Thing
 
 YMP 不仅提供便捷的 Web 及其它 Java 项目的快速开发体验，也将不断提供更多丰富的项目实践经验。
 
-感兴趣的小伙伴儿们可以加入 官方QQ群：480374360，一起交流学习，帮助 YMP 成长！
+感兴趣的小伙伴儿们可以加入官方 QQ 群：480374360，一起交流学习，帮助 YMP 成长！
 
-如果喜欢YMP，希望得到你的支持和鼓励！
+如果喜欢 YMP，希望得到你的支持和鼓励！
 
 ![Donation Code](https://ymate.net/img/donation_code.png)
 
