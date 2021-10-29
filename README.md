@@ -1,10 +1,10 @@
 # YMATE-EMBED
 
-本项目为可执行嵌入式 Web 容器，在原始WAR包文件结构的基础上为其指定引导程序及相关依赖文件，并通过命令行方式直接启动 Web 服务，从而达到简化 Web 工程部署流程的目的。
+本项目为可执行嵌入式 Web 容器，在原始 WAR 包文件结构的基础上为其指定引导程序及相关依赖文件，并通过命令行方式直接启动 Web 服务，从而达到简化 Web 工程部署流程的目的。
 
 目前支持以下 Web 容器：
 
-- Apache-tomcat-embed-8.5.x
+- [Apache Tomcat® - Apache Tomcat 8.5.x](https://tomcat.apache.org/download-80.cgi) 
 
 
 
@@ -13,6 +13,8 @@
 ```shell
 java -jar <WAR包文件> [--参数项 [参数值]]
 ```
+
+
 
 ### 示例：
 
@@ -26,7 +28,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 | 参数项                  | 说明 | 默认值    |
 | ----------------------- | ---- | --------- |
-| --redeploy              | 重新部署，服务启动时将 WAR 包中的相关资源文件重新解压并覆盖 |      |
+| --redeploy              | 重新部署<br />*服务启动时将 WAR 包中的相关资源文件重新解压并覆盖* |      |
 | --port                  | 服务监听的端口号 | `8080`      |
 | --protocol              | 协议名称 | `HTTP/1.1`  |
 | --contextPath           | 上下文映射路径 | `""` |
@@ -44,6 +46,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 ## 配置说明
 
 
+
 ### 设置 Tomcat 版本
 
 ```xml
@@ -51,6 +54,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
     <tomcat.version>8.5.72</tomcat.version>
 </properties>
 ```
+
 
 
 ### 添加必要依赖包
@@ -170,4 +174,16 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 ```
 
 
+
+### One More Thing
+
+YMP 不仅提供便捷的 Web 及其它 Java 项目的快速开发体验，也将不断提供更多丰富的项目实践经验。
+
+感兴趣的小伙伴儿们可以加入 官方QQ群：480374360，一起交流学习，帮助 YMP 成长！
+
+如果喜欢YMP，希望得到你的支持和鼓励！
+
+![Donation Code](https://ymate.net/img/donation_code.png)
+
+了解更多有关 YMP 框架的内容，请访问官网：[https://ymate.net](https://ymate.net)
 
