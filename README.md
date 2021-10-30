@@ -4,7 +4,7 @@
 
 目前支持以下 Web 容器：
 
-- [Apache Tomcat® - Apache Tomcat 8.5.x](https://tomcat.apache.org/download-80.cgi) 
+- [Apache Tomcat® - 8.5.x](https://tomcat.apache.org/) 
 
 
 
@@ -21,6 +21,15 @@ java -jar <WAR包文件> [--参数项 [参数值]]
 ```shell
 java -jar demo.war --port 8088 --contextPath /demo --redeploy
 ```
+
+
+> 提示：
+> 
+> 项目文件在运行时将默认被释放到 `${user.home}/.embeddedWorks` 目录下，若需更改请在运行时调整 ${user.home} 路径设置，示例如下：
+> 
+> ```shell
+> java -jar -Duser.home=/Temp/webapps demo.war --port 8088 --contextPath /demo
+> ```
 
 
 
