@@ -25,7 +25,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 > 提示：
 > 
-> 项目文件在运行时将默认被释放到 `${user.home}/.embeddedWorks` 目录下，若需更改请在运行时调整 ${user.home} 路径设置，示例如下：
+> 项目文件在运行时将默认被释放到 `${user.home}/.embeddedWorks` 目录下，若需更改请在运行时调整 `${user.home}` 路径设置，示例如下：
 > 
 > ```shell
 > java -jar -Duser.home=/Temp/webapps demo.war --port 8088 --contextPath /demo
