@@ -7,11 +7,10 @@
     <parent>
         <artifactId>ymate-embed-parent</artifactId>
         <groupId>net.ymate.module</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>ymate-module-embed</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>ymate-module-embed</name>

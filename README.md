@@ -60,7 +60,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 ```xml
 <properties>
-    <tomcat.version>8.5.72</tomcat.version>
+    <tomcat.version>8.5.73</tomcat.version>
 </properties>
 ```
 
@@ -72,7 +72,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 <dependency>
     <groupId>net.ymate.module</groupId>
     <artifactId>ymate-module-embed</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -166,7 +166,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
                     <artifactItem>
                         <groupId>net.ymate.module</groupId>
                         <artifactId>ymate-module-embed-tomcat</artifactId>
-                        <version>1.0-SNAPSHOT</version>
+                        <version>1.0.0</version>
                     </artifactItem>
                 </artifactItems>
                 <outputDirectory>${project.build.directory}/${project.build.finalName}/META-INF/dependencies</outputDirectory>
