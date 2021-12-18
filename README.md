@@ -1,5 +1,8 @@
 # YMATE-EMBED
 
+[![Maven Central status](https://img.shields.io/maven-central/v/net.ymate.module/ymate-module-embed.svg)](https://search.maven.org/#search%7Cga%7C1%7Cnet.ymate.platform)
+[![LICENSE](https://img.shields.io/github/license/suninformation/ymate-embed.svg)](https://gitee.com/suninformation/ymate-embed/blob/master/LICENSE)
+
 本项目为可执行嵌入式 Web 容器，在原始 WAR 包文件结构的基础上为其指定引导程序及相关依赖文件，并通过命令行方式直接启动 Web 服务，从而达到简化 Web 工程部署流程的目的。
 
 目前支持以下 Web 容器：
@@ -38,6 +41,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 | 参数项                  | 说明 | 默认值    |
 | ----------------------- | ---- | --------- |
 | --redeploy              | 重新部署<br />*服务启动时将 WAR 包中的相关资源文件重新解压并覆盖* |      |
+| --cleanup               | 清理部署目录<br />*删除上次部署的内容* | |
 | --port                  | 服务监听的端口号 | `8080`      |
 | --protocol              | 协议名称 | `HTTP/1.1`  |
 | --contextPath           | 上下文映射路径 | `""` |

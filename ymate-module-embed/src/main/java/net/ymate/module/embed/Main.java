@@ -56,6 +56,16 @@ public class Main {
             System.out.println("Temporary directory: " + tmpDirPath);
             //
             CommandLineHelper configs = CommandLineHelper.bind(args);
+            if (configs.has("cleanup")) {
+                File cleanupDir = targetFile.getParentFile();
+                if (cleanupDir.exists()) {
+                    if (!deleteFiles(cleanupDir)) {
+                        System.out.printf("Failed to clean up directory: %s%n", cleanupDir);
+                    } else {
+                        System.out.printf("Successfully cleaned up directory: %s%n", cleanupDir);
+                    }
+                }
+            }
             boolean redeploy = configs.has("redeploy");
             //
             Enumeration<JarEntry> entriesEnum = jarFile.entries();
@@ -80,6 +90,10 @@ public class Main {
                 }
             }
             Set<URL> urls = new HashSet<>();
+            File webClassesDir = new File(targetFile, "WEB-INF/classes");
+            if (webClassesDir.exists() && webClassesDir.isDirectory()) {
+                urls.add(webClassesDir.toURI().toURL());
+            }
             File deptLibDir = new File(targetFile, "META-INF/dependencies");
             if (deptLibDir.exists() && deptLibDir.isDirectory()) {
                 parseLibDir(deptLibDir, urls);
@@ -184,5 +198,18 @@ public class Main {
                 output.write(buffer, 0, n);
             }
         }
+    }
+
+    public static boolean deleteFiles(File distFile) {
+        if (distFile == null || !distFile.exists()) {
+            return false;
+        }
+        if (distFile.isDirectory()) {
+            File[] files = distFile.listFiles();
+            if (files != null) {
+                Arrays.stream(files).forEachOrdered(Main::deleteFiles);
+            }
+        }
+        return distFile.delete();
     }
 }
