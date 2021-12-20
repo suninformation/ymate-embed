@@ -6,7 +6,7 @@
 
     <groupId>net.ymate.module</groupId>
     <artifactId>ymate-embed-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>pom</packaging>
 
     <name>ymate-embed-parent</name>
@@ -33,7 +33,7 @@
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
-            <url>http://apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
@@ -131,10 +131,6 @@
                 <configuration>
                     <skipTests>true</skipTests>
                 </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-archetype-plugin</artifactId>
-                <version>2.4</version>
             </plugin>
         </plugins>
     </build>

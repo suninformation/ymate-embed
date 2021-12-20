@@ -23,9 +23,9 @@ import java.util.*;
  */
 public class CommandLineHelper {
 
-    private static final String EMPTY = "";
+    public static final String EMPTY = "";
 
-    private static final String SPACE = " ";
+    public static final String SPACE = " ";
 
     private final Map<String, String> arguments = new HashMap<>();
 
@@ -66,6 +66,18 @@ public class CommandLineHelper {
         }
     }
 
+    public void appendIfNotExist(Map<String, String> source) {
+        if (source != null && !source.isEmpty()) {
+            source.forEach(arguments::putIfAbsent);
+        }
+    }
+
+    public void appendIfNotExist(Properties source) {
+        if (source != null && !source.isEmpty()) {
+            source.forEach((k, v) -> arguments.putIfAbsent(k.toString(), v.toString()));
+        }
+    }
+
     public Map<String, String> getArguments() {
         return Collections.unmodifiableMap(arguments);
     }
@@ -97,21 +109,66 @@ public class CommandLineHelper {
         return value;
     }
 
-    public boolean getBoolean(String option) {
-        return getBoolean(option, false);
+    public boolean getBooleanValue(String option) {
+        return getBooleanValue(option, false);
     }
 
-    public boolean getBoolean(String option, boolean defaultValue) {
+    public boolean getBooleanValue(String option, boolean defaultValue) {
         String value = getString(option, String.valueOf(defaultValue));
         return Boolean.parseBoolean(value);
     }
 
-    public int getInt(String option) {
-        return getInt(option, 0);
+    public Boolean getBoolean(String option) {
+        return getBoolean(option, null);
     }
 
-    public int getInt(String option, int defaultValue) {
+    public Boolean getBoolean(String option, Boolean defaultValue) {
+        String value = getString(option);
+        if (value != null) {
+            return Boolean.parseBoolean(value);
+        }
+        return defaultValue;
+    }
+
+    public int getIntValue(String option) {
+        return getIntValue(option, 0);
+    }
+
+    public int getIntValue(String option, int defaultValue) {
         String value = getString(option, String.valueOf(defaultValue));
         return Integer.parseInt(value);
+    }
+
+    public Integer getInt(String option) {
+        return getInt(option, null);
+    }
+
+    public Integer getInt(String option, Integer defaultValue) {
+        String value = getString(option);
+        if (value != null) {
+            return Integer.parseInt(value);
+        }
+        return defaultValue;
+    }
+
+    public long getLongValue(String option) {
+        return getLongValue(option, 0);
+    }
+
+    public long getLongValue(String option, long defaultValue) {
+        String value = getString(option, String.valueOf(defaultValue));
+        return Long.parseLong(value);
+    }
+
+    public Long getLong(String option) {
+        return getLong(option, null);
+    }
+
+    public Long getLong(String option, Long defaultValue) {
+        String value = getString(option);
+        if (value != null) {
+            return Long.parseLong(value);
+        }
+        return defaultValue;
     }
 }

@@ -7,8 +7,7 @@
 
 目前支持以下 Web 容器：
 
-- [Apache Tomcat® - 8.5.x](https://tomcat.apache.org/) 
-
+- [Apache Tomcat® - 8.5.x / 9.0.x](https://tomcat.apache.org/) 
 
 
 ## 命令行格式
@@ -36,12 +35,22 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 
 
-## 参数项及默认值
+## 命令参数项
 
 | 参数项                  | 说明 | 默认值    |
 | ----------------------- | ---- | --------- |
 | --redeploy              | 重新部署<br />*服务启动时将 WAR 包中的相关资源文件重新解压并覆盖* |      |
 | --cleanup               | 清理部署目录<br />*删除上次部署的内容* | |
+| --conf | 指定配置文件名称（不包含扩展名） | `tomcat` |
+
+
+
+## 服务参数项
+
+以下参数项可以通过命令行或使用文件进行配置，若两者同时存在则命令行配置优先，该文件必须放置在类路径下，默认名称为：`tomcat.properties` ，允许自定义名称，如：`test.properties`，但需要通过命令行参数项 `--conf test` 使其生效。
+
+| 参数项                  | 说明 | 默认值    |
+| ----------------------- | ---- | --------- |
 | --port                  | 服务监听的端口号 | `8080`      |
 | --protocol              | 协议名称 | `HTTP/1.1`  |
 | --contextPath           | 上下文映射路径 | `""` |
@@ -53,6 +62,68 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 | --maxConnections        | 最大连接数 | `10000`     |
 | --maxThreads            | 最大工作线程数 | `200`       |
 | --useBodyEncodingForURI | 请求参数的编码方式采用请求体的编码方式 | `true`      |
+| --maxCookieCount |  |  |
+| --scheme |  |  |
+| --allowTrace |  |  |
+| --discardFacades |  |  |
+| --enableLookups |  |  |
+| --encodedSolidusHandling |  |  |
+| --maxParameterCount |  |  |
+| --maxPostSize |  |  |
+| --parseBodyMethods |  |  |
+| --proxyName |  |  |
+| --proxyPort |  |  |
+| --redirectPort |  |  |
+| --secure |  |  |
+| --domain |  |  |
+| --server |  |  |
+| --useIPVHosts |  |  |
+| --xpoweredBy |  |  |
+| --throwOnFailure |  |  |
+| --ciphers |  |  |
+| --processorCache |  |  |
+| --allowHostHeaderMismatch |  |  |
+| --clientAuth |  |  |
+| --connectionUploadTimeout |  |  |
+| --continueResponseTiming |  |  |
+| --defaultSSLHostConfigName |  |  |
+| --disableUploadTimeout |  |  |
+| --keyAlias |  |  |
+| --keyPass |  |  |
+| --keystoreFile |  |  |
+| --keystorePass |  |  |
+| --keystoreProvider |  |  |
+| --keystoreType |  |  |
+| --maxExtensionSize |  |  |
+| --maxHttpHeaderSize |  |  |
+| --maxKeepAliveRequests |  |  |
+| --maxSavePostSize |  |  |
+| --maxSwallowSize |  |  |
+| --maxTrailerSize |  |  |
+| --rejectIllegalHeader |  |  |
+| --serverRemoveAppProvidedValues |  |  |
+| --sessionCacheSize |  |  |
+| --sessionTimeout |  |  |
+| --caCertificateFile |  |  |
+| --caCertificatePath |  |  |
+| --caRevocationFile |  |  |
+| --caRevocationPath |  |  |
+| --SSLEnabled |  |  |
+| --SSLProtocol |  |  |
+| --SSLVerifyDepth |  |  |
+| --sslProtocol |  |  |
+| --certificateChainFile |  |  |
+| --certificateFile |  |  |
+| --certificateKeyFile |  |  |
+| --disableCompression |  |  |
+| --disableSessionTickets |  |  |
+| --trustManagerClassName |  |  |
+| --useKeepAliveResponseHeader |  |  |
+| --acceptCount |  |  |
+| --acceptorThreadPriority |  |  |
+| --clientCertProvider |  |  |
+| --maxHeaderCount |  |  |
+| --keepAliveTimeout |  |  |
 
 
 

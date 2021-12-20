@@ -7,7 +7,7 @@
     <parent>
         <artifactId>ymate-embed-parent</artifactId>
         <groupId>net.ymate.module</groupId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>ymate-module-embed-tomcat</artifactId>
@@ -42,7 +42,6 @@
             <groupId>net.ymate.module</groupId>
             <artifactId>ymate-module-embed</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
