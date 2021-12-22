@@ -69,8 +69,6 @@ public class TomcatContainer implements IContainer {
 
     private final static String CONFIG_KEY_ENABLE_LOOKUPS = "enableLookups";
 
-    private final static String CONFIG_KEY_ENCODED_SOLIDUS_HANDLING = "encodedSolidusHandling";
-
     private final static String CONFIG_KEY_MAX_PARAMETER_COUNT = "maxParameterCount";
 
     private final static String CONFIG_KEY_MAX_POST_SIZE = "maxPostSize";
@@ -90,8 +88,6 @@ public class TomcatContainer implements IContainer {
     private final static String CONFIG_KEY_SERVER = "server";
 
     private final static String CONFIG_KEY_USE_IP_VHOSTS = "useIPVHosts";
-
-    private final static String CONFIG_KEY_XPOWERED_BY = "xpoweredBy";
 
     private final static String CONFIG_KEY_THROW_ON_FAILURE = "throwOnFailure";
 
@@ -220,7 +216,6 @@ public class TomcatContainer implements IContainer {
             connector.setSecure(secure);
         }
         connector.setUseIPVHosts(configs.getBooleanValue(CONFIG_KEY_USE_IP_VHOSTS, false));
-        connector.setXpoweredBy(configs.getBooleanValue(CONFIG_KEY_XPOWERED_BY, false));
         connector.setAllowTrace(configs.getBooleanValue(CONFIG_KEY_ALLOW_TRACE, false));
         connector.setEnableLookups(configs.getBooleanValue(CONFIG_KEY_ENABLE_LOOKUPS, false));
         connector.setProperty("file.encoding", configs.getString(CONFIG_KEY_FILE_ENCODING, "UTF-8"));
@@ -237,10 +232,6 @@ public class TomcatContainer implements IContainer {
         Boolean discardFacades = configs.getBoolean(CONFIG_KEY_DISCARD_FACADES);
         if (discardFacades != null) {
             connector.setDiscardFacades(discardFacades);
-        }
-        String encodedSolidusHandling = configs.getString(CONFIG_KEY_ENCODED_SOLIDUS_HANDLING, null);
-        if (encodedSolidusHandling != null) {
-            connector.setEncodedSolidusHandling(encodedSolidusHandling);
         }
         int maxParameterCount = configs.getIntValue(CONFIG_KEY_MAX_PARAMETER_COUNT);
         if (maxParameterCount > 0) {

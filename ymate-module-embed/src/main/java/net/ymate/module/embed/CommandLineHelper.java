@@ -68,13 +68,13 @@ public class CommandLineHelper {
 
     public void appendIfNotExist(Map<String, String> source) {
         if (source != null && !source.isEmpty()) {
-            source.forEach(arguments::putIfAbsent);
+            source.forEach((key, value) -> arguments.putIfAbsent(fixOption(key), value));
         }
     }
 
     public void appendIfNotExist(Properties source) {
         if (source != null && !source.isEmpty()) {
-            source.forEach((k, v) -> arguments.putIfAbsent(k.toString(), v.toString()));
+            source.forEach((k, v) -> arguments.putIfAbsent(fixOption(k.toString()), v.toString()));
         }
     }
 

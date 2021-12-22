@@ -62,68 +62,66 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 | --maxConnections        | 最大连接数 | `10000`     |
 | --maxThreads            | 最大工作线程数 | `200`       |
 | --useBodyEncodingForURI | 请求参数的编码方式采用请求体的编码方式 | `true`      |
-| --maxCookieCount |  |  |
-| --scheme |  |  |
-| --allowTrace |  |  |
-| --discardFacades |  |  |
-| --enableLookups |  |  |
-| --encodedSolidusHandling |  |  |
-| --maxParameterCount |  |  |
-| --maxPostSize |  |  |
-| --parseBodyMethods |  |  |
-| --proxyName |  |  |
-| --proxyPort |  |  |
-| --redirectPort |  |  |
-| --secure |  |  |
-| --domain |  |  |
-| --server |  |  |
-| --useIPVHosts |  |  |
-| --xpoweredBy |  |  |
-| --throwOnFailure |  |  |
-| --ciphers |  |  |
-| --processorCache |  |  |
-| --allowHostHeaderMismatch |  |  |
+| --maxCookieCount | The maximum number of cookies permitted for a request. Use a value less than zero for no limit. | `200` |
+| --scheme | Set the scheme that will be assigned to requests received through this connector. | `http` |
+| --allowTrace | Set the allowTrace flag, to disable or enable the TRACE HTTP method. | `false` |
+| --discardFacades | Set the recycling strategy for the object facades. | `false` |
+| --enableLookups | Set the "enable DNS lookups" flag. | `false` |
+| --maxParameterCount | Set the maximum number of parameters (GET plus POST) that will be automatically parsed by the container. A value of less than 0 means no limit. | `10000` |
+| --maxPostSize | Set the maximum size of a POST which will be automatically parsed by the container. | `2097152` |
+| --parseBodyMethods | Set list of HTTP methods which should allow body parameter parsing. | `POST` |
+| --proxyName | Set the proxy server name for this Connector. |  |
+| --proxyPort | Set the proxy server port for this Connector. | `0` |
+| --redirectPort | The redirect port for non-SSL to SSL redirects. | `443` |
+| --secure | The secure connection flag that will be set on all requests received through this connector. | `false` |
+| --domain | Specify the domain under which this component should be registered. |  |
+| --server | Set the server header name. |  |
+| --useIPVHosts | Enable the use of IP-based virtual hosting. | `false` |
+| --throwOnFailure | Configure if a `LifecycleException` thrown by a sub-class during `initInternal()` , `startInternal()` , `stopInternal()` or `destroyInternal()` will be re-thrown for the caller to handle or if it will be logged instead. | `true` |
+| --ciphers | Set the new cipher configuration. Note: Regardless of the format used to set the configuration, it is always stored in OpenSSL format. |  |
+| --processorCache | The maximum number of idle processors that will be retained in the cache and re-used with a subsequent request. A value of -1 means unlimited. | `200` |
+| --allowHostHeaderMismatch | Will Tomcat accept an HTTP 1.1 request where the host header does not agree with the host specified (if any) in the request line? | `true` |
 | --clientAuth |  |  |
-| --connectionUploadTimeout |  |  |
+| --connectionUploadTimeout | Specifies a different (usually longer) connection timeout during data upload. | `300000` |
 | --continueResponseTiming |  |  |
 | --defaultSSLHostConfigName |  |  |
-| --disableUploadTimeout |  |  |
+| --disableUploadTimeout | Set the flag to control whether a separate connection timeout is used during upload of a request body. | `true` |
 | --keyAlias |  |  |
 | --keyPass |  |  |
 | --keystoreFile |  |  |
 | --keystorePass |  |  |
 | --keystoreProvider |  |  |
-| --keystoreType |  |  |
-| --maxExtensionSize |  |  |
-| --maxHttpHeaderSize |  |  |
-| --maxKeepAliveRequests |  |  |
-| --maxSavePostSize |  |  |
-| --maxSwallowSize |  |  |
-| --maxTrailerSize |  |  |
-| --rejectIllegalHeader |  |  |
-| --serverRemoveAppProvidedValues |  |  |
-| --sessionCacheSize |  |  |
-| --sessionTimeout |  |  |
+| --keystoreType |  | `JKS` |
+| --maxExtensionSize | Maximum size of extension information in chunked encoding. | `8192` |
+| --maxHttpHeaderSize | Maximum size of the HTTP message header. | `8192` |
+| --maxKeepAliveRequests | Set the maximum number of Keep-Alive requests to allow. This is to safeguard from DoS attacks. Setting to a negative value disables the limit. | `100` |
+| --maxSavePostSize | Set the maximum size of a POST which will be buffered during FORM or CLIENT-CERT authentication. When a POST is received where the security constraints require a client certificate, the POST body needs to be buffered while an SSL handshake takes place to obtain the certificate. A similar buffering is required during FDORM auth. | `4096` |
+| --maxSwallowSize | Maximum amount of request body to swallow. | `2097152` |
+| --maxTrailerSize | Maximum size of trailing headers in bytes. | `8192` |
+| --rejectIllegalHeader | If an HTTP request is received that contains an illegal header name or value (e.g. the header name is not a token) should the request be rejected (with a 400 response) or should the illegal header be ignored? | `false` |
+| --serverRemoveAppProvidedValues | Should application provider values for the HTTP Server header be removed. Note that if `server` is set, any application provided value will be over-ridden. | `false` |
+| --sessionCacheSize |  | `-1` |
+| --sessionTimeout |  | `86400` |
 | --caCertificateFile |  |  |
 | --caCertificatePath |  |  |
 | --caRevocationFile |  |  |
 | --caRevocationPath |  |  |
-| --SSLEnabled |  |  |
+| --SSLEnabled |  | `false` |
 | --SSLProtocol |  |  |
-| --SSLVerifyDepth |  |  |
-| --sslProtocol |  |  |
+| --SSLVerifyDepth |  | `10` |
+| --sslProtocol |  | `TLS` |
 | --certificateChainFile |  |  |
 | --certificateFile |  |  |
 | --certificateKeyFile |  |  |
-| --disableCompression |  |  |
-| --disableSessionTickets |  |  |
+| --disableCompression |  | `true` |
+| --disableSessionTickets |  | `false` |
 | --trustManagerClassName |  |  |
-| --useKeepAliveResponseHeader |  |  |
-| --acceptCount |  |  |
-| --acceptorThreadPriority |  |  |
-| --clientCertProvider |  |  |
-| --maxHeaderCount |  |  |
-| --keepAliveTimeout |  |  |
+| --useKeepAliveResponseHeader |  | `true` |
+| --acceptCount | Allows the server developer to specify the acceptCount (backlog) that should be used for server sockets. | `100` |
+| --acceptorThreadPriority | Priority of the acceptor threads. | `5` |
+| --clientCertProvider | When client certificate information is presented in a form other than instances of `java.security.cert.X509Certificate` it needs to be converted before it can be used and this property controls which JSSE provider is used to perform the conversion. For example it is used with the AJP connectors, the HTTP APR connector and with the `org.apache.catalina.valves.SSLValve`. If not specified, the default provider will be used. |  |
+| --maxHeaderCount | The maximum number of headers in a request that are allowed. A value of less than 0 means no limit. | `100` |
+| --keepAliveTimeout | Keepalive timeout, if not set the soTimeout is used. | `20000` |
 
 
 
@@ -131,11 +129,12 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 
 
-### STEP 1：设置 Tomcat 版本
+### STEP 1：设置 Tomcat 及依赖包版本
 
 ```xml
 <properties>
     <tomcat.version>8.5.73</tomcat.version>
+    <ymate.module.embed.version>1.0.1</ymate.module.embed.version>
 </properties>
 ```
 
@@ -146,8 +145,8 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 ```xml
 <dependency>
     <groupId>net.ymate.module</groupId>
-    <artifactId>ymate-module-embed</artifactId>
-    <version>1.0.0</version>
+    <artifactId>ymate-module-embed-tomcat</artifactId>
+    <version>${ymate.module.embed.version}</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -241,7 +240,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
                     <artifactItem>
                         <groupId>net.ymate.module</groupId>
                         <artifactId>ymate-module-embed-tomcat</artifactId>
-                        <version>1.0.0</version>
+                        <version>${ymate.module.embed.version}</version>
                     </artifactItem>
                 </artifactItems>
                 <outputDirectory>${project.build.directory}/${project.build.finalName}/META-INF/dependencies</outputDirectory>
@@ -254,6 +253,59 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
     </executions>
 </plugin>
 ```
+
+
+
+### STEP 4：配置 SSL 证书（可选）
+
+**示例一：** 通过服务参数配置 JKS 格式证书，配置参数项如下：
+
+```properties
+--SSLEnabled=true
+--keystoreFile=/home/..../keystore.jks
+--keystorePass=12345678x
+--keystoreType=JKS
+```
+
+> **注：** 请根据实际情况调整以上配置，可以直接通过命令行或者通过 `tomcat.properties` 文件进行设置。
+
+
+
+**示例二：** 本例以配置  JKS 格式证书为例，演示如何通过 SPI 方式对嵌入式 Tomcat 容器进行自定义配置，代码如下：
+
+```java
+package net.ymate.demo;
+
+import net.ymate.module.embed.CommandLineHelper;
+import net.ymate.module.embed.tomcat.ITomcatCustomizer;
+import org.apache.catalina.Context;
+import org.apache.catalina.Host;
+import org.apache.catalina.connector.Connector;
+import org.apache.catalina.startup.Tomcat;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
+
+public class TomcatCustomizer implements ITomcatCustomizer {
+
+    @Override
+    public void customize(CommandLineHelper configs, Tomcat tomcat, Connector connector, Host host, Context context) {
+        if (connector.getProtocolHandler() instanceof AbstractHttp11Protocol) {
+            AbstractHttp11Protocol<?> http11NioProtocol = (AbstractHttp11Protocol<?>) connector.getProtocolHandler();
+            http11NioProtocol.setSSLEnabled(true);
+            http11NioProtocol.setKeystoreFile("/home/..../keystore.jks");
+            http11NioProtocol.setKeystorePass("12345678x");
+            http11NioProtocol.setKeystoreType("JKS");
+        }
+    }
+}
+```
+
+将此实现类的名称配置到目标工程中的资源目录下 `META-INF/services/net.ymate.module.embed.tomcat.ITomcatCustomizer` 文件中使其能够被 SPI 服务正确加载，在本例中的实现类名称如下：
+
+```properties
+net.ymate.demo.TomcatCustomizer
+```
+
+
 
 
 
