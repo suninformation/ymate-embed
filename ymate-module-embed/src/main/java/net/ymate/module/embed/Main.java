@@ -20,6 +20,7 @@ import java.net.*;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Matcher;
 
 /**
  * YMP Embedded Bootstrap!
@@ -211,5 +212,44 @@ public class Main {
             }
         }
         return distFile.delete();
+    }
+
+    /**
+     * @return 返回当前嵌入式应用文件释放的主目录
+     * @since 1.0.2
+     */
+    public static String getEmbeddedHome() {
+        return System.getProperty("embedded.home");
+    }
+
+    /**
+     * @return 返回当前应用根路径
+     * @since 1.0.2
+     */
+    public static String getRootPath() {
+        File rootDir = new File(getEmbeddedHome(), "WEB-INF/classes");
+        if (rootDir.exists() && rootDir.isDirectory()) {
+            return rootDir.getPath();
+        }
+        return System.getProperty("user.dir").trim();
+    }
+
+    /**
+     * @param origin 原始路径值
+     * @return 返回替换后的路径值
+     * @since 1.0.2
+     */
+    public static String replaceEnvVariable(String origin) {
+        if (origin != null && !origin.trim().isEmpty()) {
+            String rootPath = getRootPath();
+            if (origin.contains("${root}")) {
+                origin = origin.replaceAll("\\$\\{root}", Matcher.quoteReplacement(rootPath));
+            } else if (origin.contains("${user.dir}")) {
+                origin = origin.replaceAll("\\$\\{user.dir}", Matcher.quoteReplacement(System.getProperty("user.dir", rootPath)));
+            } else if (origin.contains("${user.home}")) {
+                origin = origin.replaceAll("\\$\\{user.home}", Matcher.quoteReplacement(System.getProperty("user.home", rootPath)));
+            }
+        }
+        return origin;
     }
 }

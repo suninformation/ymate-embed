@@ -1,6 +1,6 @@
 # YMATE-EMBED
 
-[![Maven Central status](https://img.shields.io/maven-central/v/net.ymate.module/ymate-module-embed.svg)](https://search.maven.org/#search%7Cga%7C1%7Cnet.ymate.platform)
+[![Maven Central status](https://img.shields.io/maven-central/v/net.ymate.module/ymate-module-embed.svg)](https://search.maven.org/artifact/net.ymate.module/ymate-module-embed)
 [![LICENSE](https://img.shields.io/github/license/suninformation/ymate-embed.svg)](https://gitee.com/suninformation/ymate-embed/blob/master/LICENSE)
 
 本项目为可执行嵌入式 Web 容器，在原始 WAR 包文件结构的基础上为其指定引导程序及相关依赖文件，并通过命令行方式直接启动 Web 服务，从而达到简化 Web 工程部署流程的目的。
@@ -262,21 +262,33 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 ```properties
 --SSLEnabled=true
---keystoreFile=/home/..../keystore.jks
+--keystoreFile=${root}/keystore.jks
 --keystorePass=12345678x
 --keystoreType=JKS
 ```
 
-> **注：** 请根据实际情况调整以上配置，可以直接通过命令行或者通过 `tomcat.properties` 文件进行设置。
+> **注：** 
+> 请根据实际情况调整以上配置，可以直接通过命令行或者通过 `tomcat.properties` 文件进行设置。
+> 
+> 另外，在配置中与路径相关的参数项均支持 `${root}`、`${user.dir}` 和 `${user.home}` 变量占位，其中 `${root}` 表示当前应用的 `WEB-INF/classes` 所在位置。
+> 
+> 若程序运行加载类路径下 JKS 文件出现 `Invalid keystore format` 异常时，请确认 `maven-resources-plugin` 插件是否存在如下列配置：
+> ```xml
+> <configuration>
+>   <nonFilteredFileExtensions>
+>       <nonFilteredFileExtension>jks</nonFilteredFileExtension>
+>   </nonFilteredFileExtensions>
+> </configuration>
+> ```
 
 
-
-**示例二：** 本例以配置  JKS 格式证书为例，演示如何通过 SPI 方式对嵌入式 Tomcat 容器进行自定义配置，代码如下：
+**示例二：** 本例以配置 JKS 格式证书为例，演示如何通过 SPI 方式对嵌入式 Tomcat 容器进行自定义配置，代码如下：
 
 ```java
 package net.ymate.demo;
 
 import net.ymate.module.embed.CommandLineHelper;
+import net.ymate.module.embed.Main;
 import net.ymate.module.embed.tomcat.ITomcatCustomizer;
 import org.apache.catalina.Context;
 import org.apache.catalina.Host;
@@ -291,7 +303,7 @@ public class TomcatCustomizer implements ITomcatCustomizer {
         if (connector.getProtocolHandler() instanceof AbstractHttp11Protocol) {
             AbstractHttp11Protocol<?> http11NioProtocol = (AbstractHttp11Protocol<?>) connector.getProtocolHandler();
             http11NioProtocol.setSSLEnabled(true);
-            http11NioProtocol.setKeystoreFile("/home/..../keystore.jks");
+            http11NioProtocol.setKeystoreFile(Main.replaceEnvVariable("${root}keystore.jks"));
             http11NioProtocol.setKeystorePass("12345678x");
             http11NioProtocol.setKeystoreType("JKS");
         }
@@ -305,7 +317,70 @@ public class TomcatCustomizer implements ITomcatCustomizer {
 net.ymate.demo.TomcatCustomizer
 ```
 
+**示例三：** 本例演示如何将 HTTP 请求强制重定向至 HTTPS 以及重置 Cookie 处理器方法。
 
+工程类路径下 `tomcat.properties` 文件内容如下：
+
+```properties
+# 默认连接器配置
+port=8443
+scheme=https
+secure=true
+SSLEnabled=true
+keystoreFile=${root}/keystore.jks
+keystorePass=12345678x
+keystoreType=JKS
+
+# 自定义连接器配置
+httpPort=8080
+httpScheme=http
+```
+
+Tomcat 自定义 SPI 接口实现类代码如下：
+
+```java
+package net.ymate.demo;
+
+import net.ymate.module.embed.CommandLineHelper;
+import net.ymate.module.embed.tomcat.ITomcatCustomizer;
+import org.apache.catalina.Context;
+import org.apache.catalina.Host;
+import org.apache.catalina.connector.Connector;
+import org.apache.catalina.startup.Tomcat;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
+import org.apache.tomcat.util.descriptor.web.SecurityCollection;
+import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
+
+public class TomcatCustomizer implements ITomcatCustomizer {
+
+    private static final Log LOG = LogFactory.getLog(TomcatCustomizer.class);
+
+    @Override
+    public void customize(CommandLineHelper configs, Tomcat tomcat, Connector connector, Host host, Context context) {
+        // 重置 Cookie 处理器避免出现警告
+        context.setCookieProcessor(new LegacyCookieProcessor());
+        // 设置 HTTP 请求强制重定向至 HTTPS
+        SecurityConstraint securityConstraint = new SecurityConstraint();
+        securityConstraint.setUserConstraint("CONFIDENTIAL");
+        SecurityCollection collection = new SecurityCollection();
+        collection.addPattern("/*");
+        securityConstraint.addCollection(collection);
+        context.addConstraint(securityConstraint);
+        // 新增 HTTP 连接器用于请求重定向至默认连接器端口
+        Connector connectorNew = new Connector();
+        connectorNew.setScheme(configs.getString("httpScheme", "http"));
+        connectorNew.setPort(configs.getIntValue("httpPort", 8080));
+        connectorNew.setSecure(false);
+        connectorNew.setRedirectPort(connector.getPort());
+        tomcat.getService().addConnector(connectorNew);
+        //
+        if (LOG.isInfoEnabled()) {
+            LOG.info(">>>>>>>>>>>>>>>>>>> TomcatCustomizer");
+        }
+    }
+}
+```
 
 
 

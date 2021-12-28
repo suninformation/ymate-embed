@@ -17,6 +17,7 @@ package net.ymate.module.embed.tomcat;
 
 import net.ymate.module.embed.CommandLineHelper;
 import net.ymate.module.embed.IContainer;
+import net.ymate.module.embed.Main;
 import org.apache.catalina.Context;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
@@ -200,7 +201,7 @@ public class TomcatContainer implements IContainer {
         int port = configs.getIntValue(CONFIG_KEY_PORT, 8080);
         Boolean secure = configs.getBoolean(CONFIG_KEY_SECURE);
         //
-        final File contextPathDir = new File(System.getProperty("embedded.home"));
+        final File contextPathDir = new File(Main.getEmbeddedHome());
         //
         tomcat = new Tomcat();
         tomcat.setPort(port);
@@ -318,7 +319,7 @@ public class TomcatContainer implements IContainer {
             }
             String keystoreFile = configs.getString(CONFIG_KEY_KEYSTORE_FILE, null);
             if (keystoreFile != null) {
-                http11NioProtocol.setKeystoreFile(keystoreFile);
+                http11NioProtocol.setKeystoreFile(Main.replaceEnvVariable(keystoreFile));
             }
             String keystorePass = configs.getString(CONFIG_KEY_KEYSTORE_PASS, null);
             if (keystorePass != null) {
@@ -381,7 +382,7 @@ public class TomcatContainer implements IContainer {
             }
             String caCertificateFile = configs.getString(CONFIG_KEY_CA_CERTIFICATE_FILE, null);
             if (caCertificateFile != null) {
-                http11NioProtocol.setSSLCACertificateFile(caCertificateFile);
+                http11NioProtocol.setSSLCACertificateFile(Main.replaceEnvVariable(caCertificateFile));
             }
             String caCertificatePath = configs.getString(CONFIG_KEY_CA_CERTIFICATE_PATH, null);
             if (caCertificatePath != null) {
@@ -389,11 +390,11 @@ public class TomcatContainer implements IContainer {
             }
             String caRevocationFile = configs.getString(CONFIG_KEY_CA_REVOCATION_FILE, null);
             if (caRevocationFile != null) {
-                http11NioProtocol.setSSLCARevocationFile(caRevocationFile);
+                http11NioProtocol.setSSLCARevocationFile(Main.replaceEnvVariable(caRevocationFile));
             }
             String caRevocationPath = configs.getString(CONFIG_KEY_CA_REVOCATION_PATH, null);
             if (caRevocationPath != null) {
-                http11NioProtocol.setSSLCARevocationPath(caRevocationPath);
+                http11NioProtocol.setSSLCARevocationPath(Main.replaceEnvVariable(caRevocationPath));
             }
             String SSLProtocol = configs.getString(CONFIG_KEY_SSL_PROTOCOL, null);
             if (SSLProtocol != null) {
@@ -401,15 +402,15 @@ public class TomcatContainer implements IContainer {
             }
             String certificateChainFile = configs.getString(CONFIG_KEY_CERTIFICATE_CHAIN_FILE, null);
             if (certificateChainFile != null) {
-                http11NioProtocol.setSSLCertificateChainFile(certificateChainFile);
+                http11NioProtocol.setSSLCertificateChainFile(Main.replaceEnvVariable(certificateChainFile));
             }
             String certificateFile = configs.getString(CONFIG_KEY_CERTIFICATE_FILE, null);
             if (certificateFile != null) {
-                http11NioProtocol.setSSLCertificateFile(certificateFile);
+                http11NioProtocol.setSSLCertificateFile(Main.replaceEnvVariable(certificateFile));
             }
             String certificateKeyFile = configs.getString(CONFIG_KEY_CERTIFICATE_KEY_FILE, null);
             if (certificateKeyFile != null) {
-                http11NioProtocol.setSSLCertificateKeyFile(certificateKeyFile);
+                http11NioProtocol.setSSLCertificateKeyFile(Main.replaceEnvVariable(certificateKeyFile));
             }
             Boolean disableCompression = configs.getBoolean(CONFIG_KEY_DISABLE_COMPRESSION);
             if (disableCompression != null) {
