@@ -27,10 +27,10 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 > 提示：
 > 
-> 项目文件在运行时将默认被释放到 `${user.home}/.embeddedWorks` 目录下，若需更改请在运行时调整 `${user.home}` 路径设置，示例如下：
+> 项目文件在运行时将默认被释放到 `${user.home}/.embeddedWorks` 目录下，若需更改请使用 `--targetDir` 参数设置，示例如下：
 > 
 > ```shell
-> java -jar -Duser.home=/Temp/webapps demo.war --port 8088 --contextPath /demo
+> java -jar demo.war --targetDir /Temp/webapps --port 8088 --contextPath /demo
 > ```
 
 
@@ -42,6 +42,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 | --redeploy              | 重新部署<br />*服务启动时将 WAR 包中的相关资源文件重新解压并覆盖* |      |
 | --cleanup               | 清理部署目录<br />*删除上次部署的内容* | |
 | --conf | 指定配置文件名称（不包含扩展名） | `tomcat` |
+| --targetDir | 指定目标目录（用于存放被释放的项目文件） |  |
 
 
 
@@ -133,8 +134,8 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 ```xml
 <properties>
-    <tomcat.version>8.5.75</tomcat.version>
-    <ymate.module.embed.version>1.0.2</ymate.module.embed.version>
+    <tomcat.version>8.5.82</tomcat.version>
+    <ymate.module.embed.version>1.0.3</ymate.module.embed.version>
 </properties>
 ```
 
@@ -235,7 +236,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
                     <artifactItem>
                         <groupId>org.eclipse.jdt</groupId>
                         <artifactId>ecj</artifactId>
-                        <version>3.12.3</version>
+                        <version>3.18.0</version>
                     </artifactItem>
                     <artifactItem>
                         <groupId>net.ymate.module</groupId>

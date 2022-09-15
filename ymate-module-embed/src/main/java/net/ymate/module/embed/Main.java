@@ -15,8 +15,12 @@
  */
 package net.ymate.module.embed;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.*;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -25,7 +29,7 @@ import java.util.regex.Matcher;
 /**
  * YMP Embedded Bootstrap!
  *
- * @author YMP (https://www.ymate.net/) on 2021/03/23 20:11
+ * @author YMP (<a href="https://www.ymate.net/">www.ymate.net</a>) on 2021/03/23 20:11
  * @since 1.0.0
  */
 public class Main {
@@ -37,55 +41,66 @@ public class Main {
     public static void main(String[] args) throws Exception {
         checkVersion();
         //
-        JarFile jarFile = ownerJarFile();
-        if (jarFile != null) {
-            String jarFileName = jarFile.getName();
-            int beginIdx = jarFileName.lastIndexOf(File.separator);
-            if (beginIdx <= 0) {
-                beginIdx = 0;
-            }
-            int endIdx = jarFileName.lastIndexOf(".");
-            if (endIdx <= 0) {
-                endIdx = jarFileName.length() - 1;
-            }
-            File targetFile = new File(System.getProperty("user.home"), ".embeddedWorks/" + jarFileName.substring(beginIdx, endIdx) + "/ROOT");
-            String tmpDirPath = new File(targetFile.getParentFile(), "/temp").getPath();
-            System.setProperty("embedded.home", targetFile.getPath());
-            System.setProperty("java.io.tmpdir", tmpDirPath);
-            //
-            System.out.println("Working directory: " + targetFile.getPath());
-            System.out.println("Temporary directory: " + tmpDirPath);
-            //
-            CommandLineHelper configs = CommandLineHelper.bind(args);
-            if (configs.has("cleanup")) {
-                File cleanupDir = targetFile.getParentFile();
-                if (cleanupDir.exists()) {
-                    if (!deleteFiles(cleanupDir)) {
-                        System.out.printf("Failed to clean up directory: %s%n", cleanupDir);
-                    } else {
-                        System.out.printf("Successfully cleaned up directory: %s%n", cleanupDir);
+        File targetFile = null;
+        JarURLConnection urlConnection = ownerJarUrlConnection();
+        if (urlConnection != null) {
+            try (JarFile jarFile = urlConnection.getJarFile()) {
+                if (jarFile != null) {
+                    String jarFileName = jarFile.getName();
+                    int beginIdx = jarFileName.lastIndexOf(File.separator);
+                    if (beginIdx <= 0) {
+                        beginIdx = 0;
                     }
-                }
-            }
-            boolean redeploy = configs.has("redeploy");
-            //
-            Enumeration<JarEntry> entriesEnum = jarFile.entries();
-            while (entriesEnum.hasMoreElements()) {
-                JarEntry entry = entriesEnum.nextElement();
-                if (!entry.isDirectory()) {
-                    if (entry.getName().startsWith("net/ymate/module/embed/")) {
-                        continue;
+                    int endIdx = jarFileName.lastIndexOf(".");
+                    if (endIdx <= 0) {
+                        endIdx = jarFileName.length() - 1;
                     }
-                    File distFile = new File(targetFile, entry.getName());
-                    File distFileParent = distFile.getParentFile();
-                    if (!distFileParent.exists() && !distFileParent.mkdirs()) {
-                        throw new IOException(String.format("Unable to create directory: %s", distFileParent.getPath()));
+                    CommandLineHelper configs = CommandLineHelper.bind(args);
+                    String targetDirPath = configs.getString("targetDir");
+                    if (targetDirPath == null || targetDirPath.trim().isEmpty()) {
+                        targetDirPath = new File(System.getProperty("user.home"), ".embeddedWorks/").getPath();
+                    } else if (targetDirPath.trim().equals(".")) {
+                        targetDirPath = new File(urlConnection.getJarFileURL().getFile()).getParent();
                     }
-                    if (!distFile.exists() || redeploy) {
-                        try (InputStream inputStream = jarFile.getInputStream(entry);
-                             OutputStream outputStream = new FileOutputStream(distFile)) {
-                            System.out.printf("%s %s...%n", distFile.exists() && redeploy ? "Redeploying" : "Unpacking", entry.getName());
-                            copyStream(inputStream, outputStream);
+                    targetFile = new File(targetDirPath, jarFileName.substring(beginIdx, endIdx) + "/ROOT");
+                    String tmpDirPath = new File(targetFile.getParentFile(), "/temp").getPath();
+                    System.setProperty("embedded.home", targetFile.getPath());
+                    System.setProperty("java.io.tmpdir", tmpDirPath);
+                    //
+                    System.out.println("Working directory: " + targetFile.getPath());
+                    System.out.println("Temporary directory: " + tmpDirPath);
+                    //
+                    if (configs.has("cleanup")) {
+                        File cleanupDir = targetFile.getParentFile();
+                        if (cleanupDir.exists()) {
+                            if (!deleteFiles(cleanupDir)) {
+                                System.out.printf("Failed to clean up directory: %s%n", cleanupDir);
+                            } else {
+                                System.out.printf("Successfully cleaned up directory: %s%n", cleanupDir);
+                            }
+                        }
+                    }
+                    boolean redeploy = configs.has("redeploy");
+                    //
+                    Enumeration<JarEntry> entriesEnum = jarFile.entries();
+                    while (entriesEnum.hasMoreElements()) {
+                        JarEntry entry = entriesEnum.nextElement();
+                        if (!entry.isDirectory()) {
+                            if (entry.getName().startsWith("net/ymate/module/embed/")) {
+                                continue;
+                            }
+                            File distFile = new File(targetFile, entry.getName());
+                            File distFileParent = distFile.getParentFile();
+                            if (!distFileParent.exists() && !distFileParent.mkdirs()) {
+                                throw new IOException(String.format("Unable to create directory: %s", distFileParent.getPath()));
+                            }
+                            if (!distFile.exists() || redeploy) {
+                                try (InputStream inputStream = jarFile.getInputStream(entry);
+                                     OutputStream outputStream = Files.newOutputStream(distFile.toPath())) {
+                                    System.out.printf("%s %s...%n", distFile.exists() && redeploy ? "Redeploying" : "Unpacking", entry.getName());
+                                    copyStream(inputStream, outputStream);
+                                }
+                            }
                         }
                     }
                 }
@@ -98,10 +113,6 @@ public class Main {
             File deptLibDir = new File(targetFile, "META-INF/dependencies");
             if (deptLibDir.exists() && deptLibDir.isDirectory()) {
                 parseLibDir(deptLibDir, urls);
-            }
-            File webLibDir = new File(targetFile, "WEB-INF/lib");
-            if (webLibDir.exists() && webLibDir.isDirectory()) {
-                parseLibDir(webLibDir, urls, "tomcat-", "ecj-", "ymate-module-embed-");
             }
             URLClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]));
             Thread.currentThread().setContextClassLoader(classLoader);
@@ -180,12 +191,12 @@ public class Main {
         }
     }
 
-    public static JarFile ownerJarFile() throws IOException {
+    public static JarURLConnection ownerJarUrlConnection() throws IOException {
         URL mainClass = Main.class.getClassLoader().getResource("net/ymate/module/embed/Main.class");
         if (mainClass != null) {
             URLConnection connection = mainClass.openConnection();
             if (connection instanceof JarURLConnection) {
-                return ((JarURLConnection) connection).getJarFile();
+                return ((JarURLConnection) connection);
             }
         }
         return null;
