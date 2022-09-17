@@ -41,7 +41,6 @@ public class Main {
     public static void main(String[] args) throws Exception {
         checkVersion();
         //
-        File targetFile = null;
         JarURLConnection urlConnection = ownerJarUrlConnection();
         if (urlConnection != null) {
             try (JarFile jarFile = urlConnection.getJarFile()) {
@@ -62,16 +61,10 @@ public class Main {
                     } else if (targetDirPath.trim().equals(".")) {
                         targetDirPath = new File(urlConnection.getJarFileURL().getFile()).getParent();
                     }
-                    targetFile = new File(targetDirPath, jarFileName.substring(beginIdx, endIdx) + "/ROOT");
-                    String tmpDirPath = new File(targetFile.getParentFile(), "/temp").getPath();
-                    System.setProperty("embedded.home", targetFile.getPath());
-                    System.setProperty("java.io.tmpdir", tmpDirPath);
-                    //
-                    System.out.println("Working directory: " + targetFile.getPath());
-                    System.out.println("Temporary directory: " + tmpDirPath);
+                    File homeDir = new File(targetDirPath, jarFileName.substring(beginIdx, endIdx) + "/ROOT");
                     //
                     if (configs.has("cleanup")) {
-                        File cleanupDir = targetFile.getParentFile();
+                        File cleanupDir = homeDir.getParentFile();
                         if (cleanupDir.exists()) {
                             if (!deleteFiles(cleanupDir)) {
                                 System.out.printf("Failed to clean up directory: %s%n", cleanupDir);
@@ -89,7 +82,7 @@ public class Main {
                             if (entry.getName().startsWith("net/ymate/module/embed/")) {
                                 continue;
                             }
-                            File distFile = new File(targetFile, entry.getName());
+                            File distFile = new File(homeDir, entry.getName());
                             File distFileParent = distFile.getParentFile();
                             if (!distFileParent.exists() && !distFileParent.mkdirs()) {
                                 throw new IOException(String.format("Unable to create directory: %s", distFileParent.getPath()));
@@ -103,55 +96,66 @@ public class Main {
                             }
                         }
                     }
+                    //
+                    Set<URL> urls = new HashSet<>();
+                    File webClassesDir = new File(homeDir, "WEB-INF/classes");
+                    if (webClassesDir.exists() && webClassesDir.isDirectory()) {
+                        urls.add(webClassesDir.toURI().toURL());
+                    }
+                    File deptLibDir = new File(homeDir, "META-INF/dependencies");
+                    if (deptLibDir.exists() && deptLibDir.isDirectory()) {
+                        parseLibDir(deptLibDir, urls);
+                    }
+                    new Main().run(homeDir, args, new URLClassLoader(urls.toArray(new URL[0])));
                 }
             }
-            Set<URL> urls = new HashSet<>();
-            File webClassesDir = new File(targetFile, "WEB-INF/classes");
-            if (webClassesDir.exists() && webClassesDir.isDirectory()) {
-                urls.add(webClassesDir.toURI().toURL());
-            }
-            File deptLibDir = new File(targetFile, "META-INF/dependencies");
-            if (deptLibDir.exists() && deptLibDir.isDirectory()) {
-                parseLibDir(deptLibDir, urls);
-            }
-            URLClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]));
-            Thread.currentThread().setContextClassLoader(classLoader);
-            ServiceLoader<IContainer> containers = ServiceLoader.load(IContainer.class, classLoader);
-            if (containers.iterator().hasNext()) {
-                try {
-                    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                        for (IContainer container : containers) {
-                            try {
-                                container.stop();
-                                System.out.printf("Container [%s] stopped.%n", container.getClass().getName());
-                            } catch (Throwable e) {
-                                e.printStackTrace();
-                            }
-                            synchronized (Main.class) {
-                                running = false;
-                                Main.class.notify();
-                            }
-                        }
-                    }));
+        }
+    }
+
+    public void run(File homeDir, String[] args, ClassLoader classLoader) {
+        String tmpDirPath = new File(homeDir.getParentFile(), "/temp").getPath();
+        System.setProperty("embedded.home", homeDir.getPath());
+        System.setProperty("java.io.tmpdir", tmpDirPath);
+        //
+        System.out.printf("Working directory: %s%n", homeDir.getPath());
+        System.out.printf("Temporary directory: %s%n", tmpDirPath);
+        //
+        Thread.currentThread().setContextClassLoader(classLoader);
+        ServiceLoader<IContainer> containers = ServiceLoader.load(IContainer.class, classLoader);
+        if (containers.iterator().hasNext()) {
+            try {
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     for (IContainer container : containers) {
-                        container.start(args);
-                        System.out.printf("Container [%s] started.%n", container.getClass().getName());
-                    }
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                    System.exit(1);
-                }
-                synchronized (Main.class) {
-                    while (running) {
                         try {
-                            Main.class.wait();
-                        } catch (Throwable ignored) {
+                            container.stop();
+                            System.out.printf("Container [%s] stopped.%n", container.getClass().getName());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+                        synchronized (Main.class) {
+                            running = false;
+                            Main.class.notify();
                         }
                     }
+                }));
+                for (IContainer container : containers) {
+                    container.start(args);
+                    System.out.printf("Container [%s] started.%n", container.getClass().getName());
                 }
-            } else {
-                System.out.println("Warning: No container class was found.");
+            } catch (Throwable e) {
+                e.printStackTrace();
+                System.exit(1);
             }
+            synchronized (Main.class) {
+                while (running) {
+                    try {
+                        Main.class.wait();
+                    } catch (Throwable ignored) {
+                    }
+                }
+            }
+        } else {
+            System.out.println("Warning: No container class was found.");
         }
     }
 
@@ -164,7 +168,7 @@ public class Main {
                 if (javaVersion < MIN_JAVA_CLASS_VERSION) {
                     throw new UnsupportedClassVersionError(String.format("%d.0", javaVersion));
                 }
-                System.out.println("Java class version: " + String.format("%d.0", javaVersion));
+                System.out.printf("Java class version: %s%n", String.format("%d.0", javaVersion));
             } catch (NumberFormatException e) {
                 System.out.printf("Failed to parse java.class.version: %s.%n", versionStr);
             }
@@ -184,7 +188,7 @@ public class Main {
                     }
                     if (flag) {
                         urls.add(libFile.toURI().toURL());
-                        System.out.println("Loading " + libFile.toURI().toURL());
+                        System.out.printf("Loading %s%n", libFile.toURI().toURL());
                     }
                 }
             }
