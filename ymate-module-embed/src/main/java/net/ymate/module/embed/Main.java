@@ -75,32 +75,36 @@ public class Main {
                     }
                     boolean redeploy = configs.has("redeploy");
                     //
-                    Enumeration<JarEntry> entriesEnum = jarFile.entries();
-                    while (entriesEnum.hasMoreElements()) {
-                        JarEntry entry = entriesEnum.nextElement();
-                        if (!entry.isDirectory()) {
-                            if (entry.getName().startsWith("net/ymate/module/embed/")) {
-                                continue;
-                            }
-                            File distFile = new File(homeDir, entry.getName());
-                            File distFileParent = distFile.getParentFile();
-                            if (!distFileParent.exists() && !distFileParent.mkdirs()) {
-                                throw new IOException(String.format("Unable to create directory: %s", distFileParent.getPath()));
-                            }
-                            if (!distFile.exists() || redeploy) {
-                                try (InputStream inputStream = jarFile.getInputStream(entry);
-                                     OutputStream outputStream = Files.newOutputStream(distFile.toPath())) {
-                                    System.out.printf("%s %s...%n", distFile.exists() && redeploy ? "Redeploying" : "Unpacking", entry.getName());
-                                    copyStream(inputStream, outputStream);
+                    if (!homeDir.exists() || redeploy) {
+                        Enumeration<JarEntry> entriesEnum = jarFile.entries();
+                        while (entriesEnum.hasMoreElements()) {
+                            JarEntry entry = entriesEnum.nextElement();
+                            if (!entry.isDirectory()) {
+                                if (entry.getName().startsWith("net/ymate/module/embed/")) {
+                                    continue;
+                                }
+                                File distFile = new File(homeDir, entry.getName());
+                                File distFileParent = distFile.getParentFile();
+                                if (!distFileParent.exists() && !distFileParent.mkdirs()) {
+                                    throw new IOException(String.format("Unable to create directory: %s", distFileParent.getPath()));
+                                }
+                                if (!distFile.exists() || redeploy) {
+                                    try (InputStream inputStream = jarFile.getInputStream(entry);
+                                         OutputStream outputStream = Files.newOutputStream(distFile.toPath())) {
+                                        System.out.printf("%s %s...%n", distFile.exists() && redeploy ? "Redeploying" : "Unpacking", entry.getName());
+                                        copyStream(inputStream, outputStream);
+                                    }
                                 }
                             }
                         }
                     }
                     //
-                    Set<URL> urls = new HashSet<>();
+                    Collection<URL> urls = new HashSet<>();
                     File webClassesDir = new File(homeDir, "WEB-INF/classes");
                     if (webClassesDir.exists() && webClassesDir.isDirectory()) {
-                        urls.add(webClassesDir.toURI().toURL());
+                        URL fileUrl = webClassesDir.toURI().toURL();
+                        urls.add(fileUrl);
+                        System.out.printf("Loading %s%n", fileUrl);
                     }
                     File deptLibDir = new File(homeDir, "META-INF/dependencies");
                     if (deptLibDir.exists() && deptLibDir.isDirectory()) {
@@ -175,10 +179,10 @@ public class Main {
         }
     }
 
-    public static void parseLibDir(File libsDir, Set<URL> urls, String... startWiths) throws MalformedURLException {
+    public static void parseLibDir(File libsDir, Collection<URL> urls, String... startWiths) throws MalformedURLException {
         if (libsDir.exists() && libsDir.isDirectory()) {
             File[] libFiles = libsDir.listFiles();
-            if (libFiles != null && libFiles.length > 0) {
+            if (libFiles != null) {
                 for (File libFile : libFiles) {
                     boolean flag;
                     if (startWiths != null && startWiths.length > 0) {
@@ -187,8 +191,9 @@ public class Main {
                         flag = true;
                     }
                     if (flag) {
-                        urls.add(libFile.toURI().toURL());
-                        System.out.printf("Loading %s%n", libFile.toURI().toURL());
+                        URL fileUrl = libFile.toURI().toURL();
+                        urls.add(fileUrl);
+                        System.out.printf("Loading %s%n", fileUrl);
                     }
                 }
             }

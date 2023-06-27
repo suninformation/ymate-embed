@@ -39,28 +39,26 @@ public class CommandLineHelper {
             argumentsStr = String.join(SPACE, args);
         }
         String[] argumentsArr = argumentsStr.trim().split("--");
-        if (argumentsArr.length > 0) {
-            for (String argument : argumentsArr) {
-                if (argument != null && !argument.trim().isEmpty()) {
-                    String[] tmpArr = argument.trim().split(SPACE);
-                    switch (tmpArr.length) {
-                        case 1:
-                            arguments.put(tmpArr[0], EMPTY);
-                            break;
-                        case 2:
-                            arguments.put(tmpArr[0], tmpArr[1]);
-                            break;
-                        default:
-                            List<String> tmpList = new ArrayList<>();
-                            for (String tmpStr : tmpArr) {
-                                if (tmpStr != null && !tmpStr.trim().isEmpty()) {
-                                    tmpList.add(tmpStr.trim());
-                                }
+        for (String argument : argumentsArr) {
+            if (argument != null && !argument.trim().isEmpty()) {
+                String[] tmpArr = argument.trim().split(SPACE);
+                switch (tmpArr.length) {
+                    case 1:
+                        arguments.put(tmpArr[0], EMPTY);
+                        break;
+                    case 2:
+                        arguments.put(tmpArr[0], tmpArr[1]);
+                        break;
+                    default:
+                        List<String> tmpList = new ArrayList<>();
+                        for (String tmpStr : tmpArr) {
+                            if (tmpStr != null && !tmpStr.trim().isEmpty()) {
+                                tmpList.add(tmpStr.trim());
                             }
-                            if (tmpList.size() > 1) {
-                                arguments.put(tmpList.remove(0), String.join(SPACE, tmpList.toArray(new String[0])));
-                            }
-                    }
+                        }
+                        if (tmpList.size() > 1) {
+                            arguments.put(tmpList.remove(0), String.join(SPACE, tmpList.toArray(new String[0])));
+                        }
                 }
             }
         }
