@@ -26,11 +26,17 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 
 > 提示：
-> 
-> 项目文件在运行时将默认被释放到 `${user.home}/.embeddedWorks` 目录下，若需更改请使用 `--targetDir` 参数设置，示例如下：
-> 
+>
+> 项目文件在运行时将默认被释放到 `${user.home}/.embeddedWorks` 目录下，若需更改请使用 `--targetDir` 参数设置，当 `--targetDir` 取值为 `.` 则表示目标位置在当前目录，示例如下：
+>
 > ```shell
 > java -jar demo.war --targetDir /Temp/webapps --port 8088 --contextPath /demo
+> ```
+>
+> 由于 JDK 9 及以上版本对反射进行了限制，调整参数配置，示例如下：
+>
+> ```shell
+>java --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED -jar demo.war --targetDir /Temp/webapps --port 8088 --contextPath /demo --redeploy
 > ```
 
 
@@ -134,7 +140,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 
 ```xml
 <properties>
-    <tomcat.version>8.5.82</tomcat.version>
+    <tomcat.version>8.5.90</tomcat.version>
     <ymate.module.embed.version>1.0.3</ymate.module.embed.version>
 </properties>
 ```
