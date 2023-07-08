@@ -6,7 +6,7 @@
 
     <groupId>net.ymate.module</groupId>
     <artifactId>ymate-embed-parent</artifactId>
-    <version>1.0.3-dev</version>
+    <version>1.0.3</version>
     <packaging>pom</packaging>
 
     <name>ymate-embed-parent</name>
