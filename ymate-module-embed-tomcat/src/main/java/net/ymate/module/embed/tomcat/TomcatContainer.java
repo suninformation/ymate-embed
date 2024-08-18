@@ -96,8 +96,6 @@ public class TomcatContainer implements IContainer {
 
     private final static String CONFIG_KEY_PROCESSOR_CACHE = "processorCache";
 
-    private final static String CONFIG_KEY_ALLOW_HOST_HEADER_MISMATCH = "allowHostHeaderMismatch";
-
     private final static String CONFIG_KEY_CLIENT_AUTH = "clientAuth";
 
     private final static String CONFIG_KEY_CONNECTION_UPLOAD_TIMEOUT = "connectionUploadTimeout";
@@ -131,8 +129,6 @@ public class TomcatContainer implements IContainer {
     private final static String CONFIG_KEY_MAX_SWALLOW_SIZE = "maxSwallowSize";
 
     private final static String CONFIG_KEY_MAX_TRAILER_SIZE = "maxTrailerSize";
-
-    private final static String CONFIG_KEY_REJECT_ILLEGAL_HEADER = "rejectIllegalHeader";
 
     private final static String CONFIG_KEY_SERVER_REMOVE_APP_PROVIDED_VALUES = "serverRemoveAppProvidedValues";
 
@@ -285,10 +281,6 @@ public class TomcatContainer implements IContainer {
             if (ciphers != null) {
                 http11NioProtocol.setCiphers(ciphers);
             }
-            Boolean allowHostHeaderMismatch = configs.getBoolean(CONFIG_KEY_ALLOW_HOST_HEADER_MISMATCH);
-            if (allowHostHeaderMismatch != null) {
-                http11NioProtocol.setAllowHostHeaderMismatch(allowHostHeaderMismatch);
-            }
             String clientAuth = configs.getString(CONFIG_KEY_CLIENT_AUTH, null);
             if (clientAuth != null) {
                 http11NioProtocol.setClientAuth(clientAuth);
@@ -356,10 +348,6 @@ public class TomcatContainer implements IContainer {
             int maxTrailerSize = configs.getIntValue(CONFIG_KEY_MAX_TRAILER_SIZE);
             if (maxTrailerSize > 0) {
                 http11NioProtocol.setMaxTrailerSize(maxTrailerSize);
-            }
-            Boolean rejectIllegalHeader = configs.getBoolean(CONFIG_KEY_REJECT_ILLEGAL_HEADER);
-            if (rejectIllegalHeader != null) {
-                http11NioProtocol.setRejectIllegalHeader(rejectIllegalHeader);
             }
             if (secure != null) {
                 http11NioProtocol.setSecure(secure);

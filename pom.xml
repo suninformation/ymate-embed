@@ -6,7 +6,7 @@
 
     <groupId>net.ymate.module</groupId>
     <artifactId>ymate-embed-parent</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4-dev</version>
     <packaging>pom</packaging>
 
     <name>ymate-embed-parent</name>
@@ -20,7 +20,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tomcat.version>8.5.90</tomcat.version>
+        <tomcat.version>9.0.88</tomcat.version>
     </properties>
 
     <developers>
