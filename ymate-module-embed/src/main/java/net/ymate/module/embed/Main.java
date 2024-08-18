@@ -41,78 +41,97 @@ public class Main {
     public static void main(String[] args) throws Exception {
         checkVersion();
         //
-        JarURLConnection urlConnection = ownerJarUrlConnection();
-        if (urlConnection != null) {
-            try (JarFile jarFile = urlConnection.getJarFile()) {
-                if (jarFile != null) {
-                    String jarFileName = jarFile.getName();
-                    int beginIdx = jarFileName.lastIndexOf(File.separator);
-                    if (beginIdx <= 0) {
-                        beginIdx = 0;
-                    }
-                    int endIdx = jarFileName.lastIndexOf(".");
-                    if (endIdx <= 0) {
-                        endIdx = jarFileName.length() - 1;
-                    }
-                    CommandLineHelper configs = CommandLineHelper.bind(args);
-                    String targetDirPath = configs.getString("targetDir");
-                    if (targetDirPath == null || targetDirPath.trim().isEmpty()) {
-                        targetDirPath = new File(System.getProperty("user.home"), ".embeddedWorks/").getPath();
-                    } else if (targetDirPath.trim().equals(".")) {
-                        targetDirPath = new File(urlConnection.getJarFileURL().getFile()).getParent();
-                    }
-                    File homeDir = new File(targetDirPath, jarFileName.substring(beginIdx, endIdx) + "/ROOT");
-                    //
-                    if (configs.has("cleanup")) {
-                        File cleanupDir = homeDir.getParentFile();
-                        if (cleanupDir.exists()) {
-                            if (!deleteFiles(cleanupDir)) {
-                                System.out.printf("Failed to clean up directory: %s%n", cleanupDir);
+        CommandLineHelper configs = CommandLineHelper.bind(args);
+        File homeDir = null;
+        if (configs.has("homeDir")) {
+            String homeDirPath = configs.getString("homeDir");
+            if (homeDirPath != null && !homeDirPath.trim().isEmpty()) {
+                homeDir = new File(homeDirPath);
+            }
+        } else {
+            JarURLConnection urlConnection = ownerJarUrlConnection();
+            if (urlConnection != null) {
+                try (JarFile jarFile = urlConnection.getJarFile()) {
+                    if (jarFile != null) {
+                        String jarFileName = jarFile.getName();
+                        int beginIdx = jarFileName.lastIndexOf(File.separator);
+                        if (beginIdx <= 0) {
+                            beginIdx = 0;
+                        }
+                        int endIdx = jarFileName.lastIndexOf(".");
+                        if (endIdx <= 0) {
+                            endIdx = jarFileName.length() - 1;
+                        }
+                        String targetDirPath = configs.getString("targetDir");
+                        if (targetDirPath == null || targetDirPath.trim().isEmpty()) {
+                            targetDirPath = new File(System.getProperty("user.home"), ".embeddedWorks/").getPath();
+                        } else if (targetDirPath.trim().equals(".")) {
+                            targetDirPath = new File(urlConnection.getJarFileURL().getFile()).getParent();
+                        } else {
+                            File targetDir = new File(targetDirPath);
+                            if (targetDir.isAbsolute() && targetDir.isDirectory()) {
+                                targetDirPath = targetDir.getPath();
                             } else {
-                                System.out.printf("Successfully cleaned up directory: %s%n", cleanupDir);
+                                System.out.println("Invalid target directory: " + targetDirPath);
+                                return;
                             }
                         }
-                    }
-                    boolean redeploy = configs.has("redeploy");
-                    //
-                    if (!homeDir.exists() || redeploy) {
-                        Enumeration<JarEntry> entriesEnum = jarFile.entries();
-                        while (entriesEnum.hasMoreElements()) {
-                            JarEntry entry = entriesEnum.nextElement();
-                            if (!entry.isDirectory()) {
-                                if (entry.getName().startsWith("net/ymate/module/embed/")) {
-                                    continue;
+                        homeDir = new File(targetDirPath, jarFileName.substring(beginIdx, endIdx) + "/ROOT");
+                        //
+                        if (configs.has("cleanup")) {
+                            File cleanupDir = homeDir.getParentFile();
+                            if (cleanupDir.exists()) {
+                                if (!deleteFiles(cleanupDir)) {
+                                    System.out.printf("Failed to clean up directory: %s%n", cleanupDir);
+                                } else {
+                                    System.out.printf("Successfully cleaned up directory: %s%n", cleanupDir);
                                 }
-                                File distFile = new File(homeDir, entry.getName());
-                                File distFileParent = distFile.getParentFile();
-                                if (!distFileParent.exists() && !distFileParent.mkdirs()) {
-                                    throw new IOException(String.format("Unable to create directory: %s", distFileParent.getPath()));
-                                }
-                                if (!distFile.exists() || redeploy) {
-                                    try (InputStream inputStream = jarFile.getInputStream(entry);
-                                         OutputStream outputStream = Files.newOutputStream(distFile.toPath())) {
-                                        System.out.printf("%s %s...%n", distFile.exists() && redeploy ? "Redeploying" : "Unpacking", entry.getName());
-                                        copyStream(inputStream, outputStream);
+                            }
+                        }
+                        boolean redeploy = configs.has("redeploy");
+                        //
+                        if (!homeDir.exists() || redeploy) {
+                            Enumeration<JarEntry> entriesEnum = jarFile.entries();
+                            while (entriesEnum.hasMoreElements()) {
+                                JarEntry entry = entriesEnum.nextElement();
+                                if (!entry.isDirectory()) {
+                                    if (entry.getName().startsWith("net/ymate/module/embed/")) {
+                                        continue;
+                                    }
+                                    File distFile = new File(homeDir, entry.getName());
+                                    File distFileParent = distFile.getParentFile();
+                                    if (!distFileParent.exists() && !distFileParent.mkdirs()) {
+                                        throw new IOException(String.format("Unable to create directory: %s", distFileParent.getPath()));
+                                    }
+                                    if (!distFile.exists() || redeploy) {
+                                        try (InputStream inputStream = jarFile.getInputStream(entry);
+                                             OutputStream outputStream = Files.newOutputStream(distFile.toPath())) {
+                                            System.out.printf("%s %s...%n", distFile.exists() && redeploy ? "Redeploying" : "Unpacking", entry.getName());
+                                            copyStream(inputStream, outputStream);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                    //
-                    Collection<URL> urls = new HashSet<>();
-                    File webClassesDir = new File(homeDir, "WEB-INF/classes");
-                    if (webClassesDir.exists() && webClassesDir.isDirectory()) {
-                        URL fileUrl = webClassesDir.toURI().toURL();
-                        urls.add(fileUrl);
-                        System.out.printf("Loading %s%n", fileUrl);
-                    }
-                    File deptLibDir = new File(homeDir, "META-INF/dependencies");
-                    if (deptLibDir.exists() && deptLibDir.isDirectory()) {
-                        parseLibDir(deptLibDir, urls);
-                    }
-                    new Main().run(homeDir, args, new URLClassLoader(urls.toArray(new URL[0])));
                 }
             }
+        }
+        if (homeDir != null && homeDir.isAbsolute() && homeDir.exists() && homeDir.isDirectory()) {
+            Collection<URL> urls = new HashSet<>();
+            File webClassesDir = new File(homeDir, "WEB-INF/classes");
+            if (webClassesDir.exists() && webClassesDir.isDirectory()) {
+                URL fileUrl = webClassesDir.toURI().toURL();
+                urls.add(fileUrl);
+                System.out.printf("Loading %s%n", fileUrl);
+            }
+            File deptLibDir = new File(homeDir, "META-INF/dependencies");
+            if (deptLibDir.exists() && deptLibDir.isDirectory()) {
+                parseLibDir(deptLibDir, urls);
+            }
+            new Main().run(homeDir, args, new URLClassLoader(urls.toArray(new URL[0])));
+        } else {
+            System.out.println("Invalid directory: " + homeDir);
         }
     }
 

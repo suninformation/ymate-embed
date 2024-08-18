@@ -33,10 +33,16 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 > java -jar demo.war --targetDir /Temp/webapps --port 8088 --contextPath /demo
 > ```
 >
+> 也可以通过 `--homeDir` 参数直接运行解压后的WAR文件目录，示例如下：
+>
+> ```shell
+> java -jar demo.war --homeDir /Temp/webapps/demo/ROOT --port 8088 --contextPath /demo
+> ```
+>
 > 由于 JDK 9 及以上版本对反射进行了限制，调整参数配置，示例如下：
 >
 > ```shell
->java --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED -jar demo.war --targetDir /Temp/webapps --port 8088 --contextPath /demo --redeploy
+> java --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED -jar demo.war --targetDir /Temp/webapps --port 8088 --contextPath /demo --redeploy
 > ```
 
 
@@ -49,6 +55,7 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 | --cleanup               | 清理部署目录<br />*删除上次部署的内容* | |
 | --conf | 指定配置文件名称（不包含扩展名） | `tomcat` |
 | --targetDir | 指定目标目录（用于存放被释放的项目文件） |  |
+| --homeDir | 直接运行WAR文件解压后的目录 | |
 
 
 
@@ -87,7 +94,6 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 | --throwOnFailure | Configure if a `LifecycleException` thrown by a sub-class during `initInternal()` , `startInternal()` , `stopInternal()` or `destroyInternal()` will be re-thrown for the caller to handle or if it will be logged instead. | `true` |
 | --ciphers | Set the new cipher configuration. Note: Regardless of the format used to set the configuration, it is always stored in OpenSSL format. |  |
 | --processorCache | The maximum number of idle processors that will be retained in the cache and re-used with a subsequent request. A value of -1 means unlimited. | `200` |
-| --allowHostHeaderMismatch | Will Tomcat accept an HTTP 1.1 request where the host header does not agree with the host specified (if any) in the request line? | `true` |
 | --clientAuth |  |  |
 | --connectionUploadTimeout | Specifies a different (usually longer) connection timeout during data upload. | `300000` |
 | --continueResponseTiming |  |  |
@@ -105,7 +111,6 @@ java -jar demo.war --port 8088 --contextPath /demo --redeploy
 | --maxSavePostSize | Set the maximum size of a POST which will be buffered during FORM or CLIENT-CERT authentication. When a POST is received where the security constraints require a client certificate, the POST body needs to be buffered while an SSL handshake takes place to obtain the certificate. A similar buffering is required during FDORM auth. | `4096` |
 | --maxSwallowSize | Maximum amount of request body to swallow. | `2097152` |
 | --maxTrailerSize | Maximum size of trailing headers in bytes. | `8192` |
-| --rejectIllegalHeader | If an HTTP request is received that contains an illegal header name or value (e.g. the header name is not a token) should the request be rejected (with a 400 response) or should the illegal header be ignored? | `false` |
 | --serverRemoveAppProvidedValues | Should application provider values for the HTTP Server header be removed. Note that if `server` is set, any application provided value will be over-ridden. | `false` |
 | --sessionCacheSize |  | `-1` |
 | --sessionTimeout |  | `86400` |
