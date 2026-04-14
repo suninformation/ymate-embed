@@ -25,6 +25,8 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.apache.tomcat.util.net.SSLHostConfig;
+import org.apache.tomcat.util.net.SSLHostConfigCertificate;
 
 import java.io.File;
 import java.io.IOException;
@@ -92,11 +94,7 @@ public class TomcatContainer implements IContainer {
 
     private final static String CONFIG_KEY_THROW_ON_FAILURE = "throwOnFailure";
 
-    private final static String CONFIG_KEY_CIPHERS = "ciphers";
-
     private final static String CONFIG_KEY_PROCESSOR_CACHE = "processorCache";
-
-    private final static String CONFIG_KEY_CLIENT_AUTH = "clientAuth";
 
     private final static String CONFIG_KEY_CONNECTION_UPLOAD_TIMEOUT = "connectionUploadTimeout";
 
@@ -105,18 +103,6 @@ public class TomcatContainer implements IContainer {
     private final static String CONFIG_KEY_DEFAULT_SSL_HOST_CONFIG_NAME = "defaultSSLHostConfigName";
 
     private final static String CONFIG_KEY_DISABLE_UPLOAD_TIMEOUT = "disableUploadTimeout";
-
-    private final static String CONFIG_KEY_KEY_ALIAS = "keyAlias";
-
-    private final static String CONFIG_KEY_KEY_PASS = "keyPass";
-
-    private final static String CONFIG_KEY_KEYSTORE_FILE = "keystoreFile";
-
-    private final static String CONFIG_KEY_KEYSTORE_PASS = "keystorePass";
-
-    private final static String CONFIG_KEY_KEYSTORE_PROVIDER = "keystoreProvider";
-
-    private final static String CONFIG_KEY_KEYSTORE_TYPE = "keystoreType";
 
     private final static String CONFIG_KEY_MAX_EXTENSION_SIZE = "maxExtensionSize";
 
@@ -131,6 +117,28 @@ public class TomcatContainer implements IContainer {
     private final static String CONFIG_KEY_MAX_TRAILER_SIZE = "maxTrailerSize";
 
     private final static String CONFIG_KEY_SERVER_REMOVE_APP_PROVIDED_VALUES = "serverRemoveAppProvidedValues";
+
+    private final static String CONFIG_KEY_SSL_ENABLED = "SSLEnabled";
+
+    private final static String CONFIG_KEY_SSL_VERIFY_DEPTH = "SSLVerifyDepth";
+
+    private final static String CONFIG_KEY_TRUST_MANAGER_CLASS_NAME = "trustManagerClassName";
+
+    private final static String CONFIG_KEY_CIPHERS = "ciphers";
+
+    private final static String CONFIG_KEY_CLIENT_AUTH = "clientAuth";
+
+    private final static String CONFIG_KEY_KEY_ALIAS = "keyAlias";
+
+    private final static String CONFIG_KEY_KEY_PASS = "keyPass";
+
+    private final static String CONFIG_KEY_KEYSTORE_FILE = "keystoreFile";
+
+    private final static String CONFIG_KEY_KEYSTORE_PASS = "keystorePass";
+
+    private final static String CONFIG_KEY_KEYSTORE_PROVIDER = "keystoreProvider";
+
+    private final static String CONFIG_KEY_KEYSTORE_TYPE = "keystoreType";
 
     private final static String CONFIG_KEY_SESSION_CACHE_SIZE = "sessionCacheSize";
 
@@ -158,12 +166,6 @@ public class TomcatContainer implements IContainer {
 
     private final static String CONFIG_KEY_DISABLE_SESSION_TICKETS = "disableSessionTickets";
 
-    private final static String CONFIG_KEY_SSL_ENABLED = "SSLEnabled";
-
-    private final static String CONFIG_KEY_SSL_VERIFY_DEPTH = "SSLVerifyDepth";
-
-    private final static String CONFIG_KEY_TRUST_MANAGER_CLASS_NAME = "trustManagerClassName";
-
     private final static String CONFIG_KEY_USE_KEEP_ALIVE_RESPONSE_HEADER = "useKeepAliveResponseHeader";
 
     private final static String CONFIG_KEY_ACCEPT_COUNT = "acceptCount";
@@ -176,14 +178,15 @@ public class TomcatContainer implements IContainer {
 
     private final static String CONFIG_KEY_KEEP_ALIVE_TIMEOUT = "keepAliveTimeout";
 
-    private Tomcat tomcat;
+    private volatile Tomcat tomcat;
 
     @Override
     public void start(String... args) {
         CommandLineHelper configs = CommandLineHelper.bind(args);
         // 处理配置文件参数
         String confFileName = configs.getString("conf", "tomcat");
-        try (InputStream inputStream = TomcatContainer.class.getResourceAsStream(String.format("/%s.properties", confFileName))) {
+        try (InputStream inputStream = TomcatContainer.class
+                .getResourceAsStream(String.format("/%s.properties", confFileName))) {
             if (inputStream != null) {
                 Properties tomcatConf = new Properties();
                 tomcatConf.load(inputStream);
@@ -191,7 +194,9 @@ public class TomcatContainer implements IContainer {
                     configs.appendIfNotExist(tomcatConf);
                 }
             }
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to load Tomcat configuration from " + confFileName + ".properties",
+                    e);
         }
         //
         int port = configs.getIntValue(CONFIG_KEY_PORT, 8080);
@@ -277,14 +282,6 @@ public class TomcatContainer implements IContainer {
             if (maxConnections > 0) {
                 http11NioProtocol.setMaxConnections(maxConnections);
             }
-            String ciphers = configs.getString(CONFIG_KEY_CIPHERS, null);
-            if (ciphers != null) {
-                http11NioProtocol.setCiphers(ciphers);
-            }
-            String clientAuth = configs.getString(CONFIG_KEY_CLIENT_AUTH, null);
-            if (clientAuth != null) {
-                http11NioProtocol.setClientAuth(clientAuth);
-            }
             int connectionUploadTimeout = configs.getIntValue(CONFIG_KEY_CONNECTION_UPLOAD_TIMEOUT);
             if (connectionUploadTimeout > 0) {
                 http11NioProtocol.setConnectionUploadTimeout(connectionUploadTimeout);
@@ -300,30 +297,6 @@ public class TomcatContainer implements IContainer {
             Boolean disableUploadTimeout = configs.getBoolean(CONFIG_KEY_DISABLE_UPLOAD_TIMEOUT);
             if (disableUploadTimeout != null) {
                 http11NioProtocol.setDisableUploadTimeout(disableUploadTimeout);
-            }
-            String keyAlias = configs.getString(CONFIG_KEY_KEY_ALIAS, null);
-            if (keyAlias != null) {
-                http11NioProtocol.setKeyAlias(keyAlias);
-            }
-            String keyPass = configs.getString(CONFIG_KEY_KEY_PASS, null);
-            if (keyPass != null) {
-                http11NioProtocol.setKeyPass(keyPass);
-            }
-            String keystoreFile = configs.getString(CONFIG_KEY_KEYSTORE_FILE, null);
-            if (keystoreFile != null) {
-                http11NioProtocol.setKeystoreFile(Main.replaceEnvVariable(keystoreFile));
-            }
-            String keystorePass = configs.getString(CONFIG_KEY_KEYSTORE_PASS, null);
-            if (keystorePass != null) {
-                http11NioProtocol.setKeystorePass(keystorePass);
-            }
-            String keystoreProvider = configs.getString(CONFIG_KEY_KEYSTORE_PROVIDER, null);
-            if (keystoreProvider != null) {
-                http11NioProtocol.setKeystoreProvider(keystoreProvider);
-            }
-            String keystoreType = configs.getString(CONFIG_KEY_KEYSTORE_TYPE, null);
-            if (keystoreType != null) {
-                http11NioProtocol.setKeystoreType(keystoreType);
             }
             int maxExtensionSize = configs.getIntValue(CONFIG_KEY_MAX_EXTENSION_SIZE);
             if (maxExtensionSize > 0) {
@@ -360,70 +333,6 @@ public class TomcatContainer implements IContainer {
             if (serverRemoveAppProvidedValues != null) {
                 http11NioProtocol.setServerRemoveAppProvidedValues(serverRemoveAppProvidedValues);
             }
-            int sessionCacheSize = configs.getIntValue(CONFIG_KEY_SESSION_CACHE_SIZE);
-            if (sessionCacheSize > 0) {
-                http11NioProtocol.setSessionCacheSize(sessionCacheSize);
-            }
-            int sessionTimeout = configs.getIntValue(CONFIG_KEY_SESSION_TIMEOUT);
-            if (sessionTimeout > 0) {
-                http11NioProtocol.setSessionTimeout(sessionTimeout);
-            }
-            String caCertificateFile = configs.getString(CONFIG_KEY_CA_CERTIFICATE_FILE, null);
-            if (caCertificateFile != null) {
-                http11NioProtocol.setSSLCACertificateFile(Main.replaceEnvVariable(caCertificateFile));
-            }
-            String caCertificatePath = configs.getString(CONFIG_KEY_CA_CERTIFICATE_PATH, null);
-            if (caCertificatePath != null) {
-                http11NioProtocol.setSSLCACertificatePath(caCertificatePath);
-            }
-            String caRevocationFile = configs.getString(CONFIG_KEY_CA_REVOCATION_FILE, null);
-            if (caRevocationFile != null) {
-                http11NioProtocol.setSSLCARevocationFile(Main.replaceEnvVariable(caRevocationFile));
-            }
-            String caRevocationPath = configs.getString(CONFIG_KEY_CA_REVOCATION_PATH, null);
-            if (caRevocationPath != null) {
-                http11NioProtocol.setSSLCARevocationPath(Main.replaceEnvVariable(caRevocationPath));
-            }
-            String SSLProtocol = configs.getString(CONFIG_KEY_SSL_PROTOCOL, null);
-            if (SSLProtocol != null) {
-                http11NioProtocol.setSSLProtocol(SSLProtocol);
-            }
-            String certificateChainFile = configs.getString(CONFIG_KEY_CERTIFICATE_CHAIN_FILE, null);
-            if (certificateChainFile != null) {
-                http11NioProtocol.setSSLCertificateChainFile(Main.replaceEnvVariable(certificateChainFile));
-            }
-            String certificateFile = configs.getString(CONFIG_KEY_CERTIFICATE_FILE, null);
-            if (certificateFile != null) {
-                http11NioProtocol.setSSLCertificateFile(Main.replaceEnvVariable(certificateFile));
-            }
-            String certificateKeyFile = configs.getString(CONFIG_KEY_CERTIFICATE_KEY_FILE, null);
-            if (certificateKeyFile != null) {
-                http11NioProtocol.setSSLCertificateKeyFile(Main.replaceEnvVariable(certificateKeyFile));
-            }
-            Boolean disableCompression = configs.getBoolean(CONFIG_KEY_DISABLE_COMPRESSION);
-            if (disableCompression != null) {
-                http11NioProtocol.setSSLDisableCompression(disableCompression);
-            }
-            Boolean disableSessionTickets = configs.getBoolean(CONFIG_KEY_DISABLE_SESSION_TICKETS);
-            if (disableSessionTickets != null) {
-                http11NioProtocol.setSSLDisableSessionTickets(disableSessionTickets);
-            }
-            Boolean SSLEnabled = configs.getBoolean(CONFIG_KEY_SSL_ENABLED);
-            if (SSLEnabled != null) {
-                http11NioProtocol.setSSLEnabled(SSLEnabled);
-            }
-            int SSLVerifyDepth = configs.getIntValue(CONFIG_KEY_SSL_VERIFY_DEPTH);
-            if (SSLVerifyDepth > 0) {
-                http11NioProtocol.setSSLVerifyDepth(SSLVerifyDepth);
-            }
-            String sslProtocol = configs.getString(CONFIG_KEY_SSL_PROTOCOL_2, null);
-            if (sslProtocol != null) {
-                http11NioProtocol.setSslProtocol(sslProtocol);
-            }
-            String trustManagerClassName = configs.getString(CONFIG_KEY_TRUST_MANAGER_CLASS_NAME, null);
-            if (trustManagerClassName != null) {
-                http11NioProtocol.setTrustManagerClassName(trustManagerClassName);
-            }
             Boolean useKeepAliveResponseHeader = configs.getBoolean(CONFIG_KEY_USE_KEEP_ALIVE_RESPONSE_HEADER);
             if (useKeepAliveResponseHeader != null) {
                 http11NioProtocol.setUseKeepAliveResponseHeader(useKeepAliveResponseHeader);
@@ -452,6 +361,109 @@ public class TomcatContainer implements IContainer {
             if (processorCache > 0) {
                 http11NioProtocol.setProcessorCache(processorCache);
             }
+            Boolean SSLEnabled = configs.getBoolean(CONFIG_KEY_SSL_ENABLED);
+            if (SSLEnabled != null) {
+                http11NioProtocol.setSSLEnabled(SSLEnabled);
+                if (SSLEnabled) {
+                    SSLHostConfig sslHostConfig = new SSLHostConfig();
+                    String SSLProtocol = configs.getString(CONFIG_KEY_SSL_PROTOCOL, null);
+                    if (SSLProtocol != null) {
+                        sslHostConfig.setProtocols(SSLProtocol);
+                    }
+                    String sslProtocol = configs.getString(CONFIG_KEY_SSL_PROTOCOL_2, null);
+                    if (sslProtocol != null) {
+                        sslHostConfig.setSslProtocol(sslProtocol);
+                    }
+                    String ciphers = configs.getString(CONFIG_KEY_CIPHERS, null);
+                    if (ciphers != null) {
+                        sslHostConfig.setCiphers(ciphers);
+                    }
+                    String clientAuth = configs.getString(CONFIG_KEY_CLIENT_AUTH, null);
+                    if (clientAuth != null) {
+                        sslHostConfig.setCertificateVerification(clientAuth);
+                    }
+                    int SSLVerifyDepth = configs.getIntValue(CONFIG_KEY_SSL_VERIFY_DEPTH);
+                    if (SSLVerifyDepth > 0) {
+                        sslHostConfig.setCertificateVerificationDepth(SSLVerifyDepth);
+                    }
+                    String trustManagerClassName = configs.getString(CONFIG_KEY_TRUST_MANAGER_CLASS_NAME, null);
+                    if (trustManagerClassName != null) {
+                        sslHostConfig.setTrustManagerClassName(trustManagerClassName);
+                    }
+                    int sessionCacheSize = configs.getIntValue(CONFIG_KEY_SESSION_CACHE_SIZE);
+                    if (sessionCacheSize > 0) {
+                        sslHostConfig.setSessionCacheSize(sessionCacheSize);
+                    }
+                    int sessionTimeout = configs.getIntValue(CONFIG_KEY_SESSION_TIMEOUT);
+                    if (sessionTimeout > 0) {
+                        sslHostConfig.setSessionTimeout(sessionTimeout);
+                    }
+                    Boolean disableCompression = configs.getBoolean(CONFIG_KEY_DISABLE_COMPRESSION);
+                    if (disableCompression != null) {
+                        sslHostConfig.setDisableCompression(disableCompression);
+                    }
+                    Boolean disableSessionTickets = configs.getBoolean(CONFIG_KEY_DISABLE_SESSION_TICKETS);
+                    if (disableSessionTickets != null) {
+                        sslHostConfig.setDisableSessionTickets(disableSessionTickets);
+                    }
+                    String caCertificateFile = configs.getString(CONFIG_KEY_CA_CERTIFICATE_FILE, null);
+                    if (caCertificateFile != null) {
+                        sslHostConfig.setCaCertificateFile(Main.replaceEnvVariable(caCertificateFile));
+                    }
+                    String caCertificatePath = configs.getString(CONFIG_KEY_CA_CERTIFICATE_PATH, null);
+                    if (caCertificatePath != null) {
+                        sslHostConfig.setCaCertificatePath(caCertificatePath);
+                    }
+                    String caRevocationFile = configs.getString(CONFIG_KEY_CA_REVOCATION_FILE, null);
+                    if (caRevocationFile != null) {
+                        sslHostConfig.setCertificateRevocationListFile(Main.replaceEnvVariable(caRevocationFile));
+                    }
+                    String caRevocationPath = configs.getString(CONFIG_KEY_CA_REVOCATION_PATH, null);
+                    if (caRevocationPath != null) {
+                        sslHostConfig.setCertificateRevocationListPath(Main.replaceEnvVariable(caRevocationPath));
+                    }
+                    //
+                    SSLHostConfigCertificate certificate = new SSLHostConfigCertificate(sslHostConfig, SSLHostConfigCertificate.Type.RSA);
+                    String certificateFile = configs.getString(CONFIG_KEY_CERTIFICATE_FILE, null);
+                    if (certificateFile != null) {
+                        certificate.setCertificateFile(Main.replaceEnvVariable(certificateFile));
+                    }
+                    String certificateKeyFile = configs.getString(CONFIG_KEY_CERTIFICATE_KEY_FILE, null);
+                    if (certificateKeyFile != null) {
+                        certificate.setCertificateKeyFile(Main.replaceEnvVariable(certificateKeyFile));
+                    }
+                    String certificateChainFile = configs.getString(CONFIG_KEY_CERTIFICATE_CHAIN_FILE, null);
+                    if (certificateChainFile != null) {
+                        certificate.setCertificateChainFile(Main.replaceEnvVariable(certificateChainFile));
+                    }
+                    String keyAlias = configs.getString(CONFIG_KEY_KEY_ALIAS, null);
+                    if (keyAlias != null) {
+                        certificate.setCertificateKeyAlias(keyAlias);
+                    }
+                    String keyPass = configs.getString(CONFIG_KEY_KEY_PASS, null);
+                    if (keyPass != null) {
+                        certificate.setCertificateKeyPassword(keyPass);
+                    }
+                    String keystoreFile = configs.getString(CONFIG_KEY_KEYSTORE_FILE, null);
+                    if (keystoreFile != null) {
+                        certificate.setCertificateKeystoreFile(Main.replaceEnvVariable(keystoreFile));
+                    }
+                    String keystorePass = configs.getString(CONFIG_KEY_KEYSTORE_PASS, null);
+                    if (keystorePass != null) {
+                        certificate.setCertificateKeystorePassword(keystorePass);
+                    }
+                    String keystoreProvider = configs.getString(CONFIG_KEY_KEYSTORE_PROVIDER, null);
+                    if (keystoreProvider != null) {
+                        certificate.setCertificateKeystoreProvider(keystoreProvider);
+                    }
+                    String keystoreType = configs.getString(CONFIG_KEY_KEYSTORE_TYPE, null);
+                    if (keystoreType != null) {
+                        certificate.setCertificateKeystoreType(keystoreType);
+                    }
+                    sslHostConfig.addCertificate(certificate);
+                    http11NioProtocol.addSslHostConfig(sslHostConfig);
+                }
+            }
         }
         tomcat.setConnector(connector);
 
@@ -466,23 +478,31 @@ public class TomcatContainer implements IContainer {
             ServiceLoader<ITomcatCustomizer> tomcatCustomizers = ServiceLoader.load(ITomcatCustomizer.class);
             for (ITomcatCustomizer customizer : tomcatCustomizers) {
                 if (customizer != null) {
-                    customizer.customize(configs, tomcat, connector, host, context);
+                    try {
+                        customizer.customize(configs, tomcat, connector, host, context);
+                    } catch (Exception e) {
+                        System.err.println("Failed to apply customizer: " + customizer.getClass().getName());
+                        e.printStackTrace();
+                    }
                 }
-                break;
             }
             tomcat.start();
         } catch (LifecycleException e) {
-            throw new Error(e.getMessage(), e);
+            throw new IllegalStateException("Failed to start Tomcat container", e);
         }
     }
 
     @Override
     public void stop() {
-        if (tomcat != null) {
+        Tomcat localTomcat = this.tomcat;
+        if (localTomcat != null) {
             try {
-                tomcat.stop();
+                localTomcat.stop();
+                localTomcat.destroy();
             } catch (LifecycleException e) {
-                throw new Error(e.getMessage(), e);
+                throw new IllegalStateException("Failed to stop Tomcat container", e);
+            } finally {
+                this.tomcat = null;
             }
         }
     }
